@@ -9,7 +9,7 @@ library(car)
 library(ggpubr)
 
 
-dt <- as_tibble(read_csv("historic_catch_data.csv")) %>% 
+dt <- as_tibble(read_csv('data/historic_catch_data.csv')) %>% 
       mutate(Zone=as.factor(Zone)) %>% 
       mutate(mm=as.factor(mm)) %>% 
       mutate_at(c('largest.dhufish.kg'), ~na_if(., 0)) %>% 
@@ -37,7 +37,7 @@ glimpse(dt)
 head(dt)
 
 
-#####broad plots#####
+#####data visuaisation#####
 
 lm1 <- lm(largest.dhufish.kg~yyyy, data = dt)
 summary(lm1)
@@ -67,7 +67,6 @@ ggplot(data = dt, aes(x = decade, y = largest.dhufish.kg)) +
 ggplot(data = dt, aes(x = mm, y = largest.dhufish.kg)) + 
   geom_boxplot() +
   stat_n_text(size=3)+
-  scale_color_viridis_b()
   ggtitle(paste("Largest dhufish by month"))+
   theme(plot.title = element_text(hjust = 0.5))+
   theme_classic()
@@ -127,7 +126,6 @@ for (zone in zones_to_include) {
       axis.title.x = element_blank(),  
       axis.title.y = element_text(size = 5)) +
       coord_cartesian(ylim = c(0, 25)) +
-    
     theme(
       panel.border = element_blank(),
       panel.grid.major = element_blank(),
@@ -225,7 +223,6 @@ ggplot(subset(dt, dinghy_presence %in% "1"), aes(decade, largest.dhufish.kg)) +
 model <- lm(largest.dhufish.kg ~ Zone * decade, data = dt)
 model1 <- car::Anova(model)
 summary(model)
-car::
 TukeyHSD(model1)
 
 
