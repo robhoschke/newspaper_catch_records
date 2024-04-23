@@ -1,0 +1,445 @@
+###
+# Project: Historical recreational fishing
+# Data:    historical fish size data
+# Task:    modelling fish size
+# Author:  Rob
+# Date:    April 2024
+##
+# devtools::install_github("beckyfisher/FSSgam_package") # Run once
+# install.packages("tidyverse")
+# install.packages("ggplot2")
+# install.packages("corrr")
+# install.packages("mgcv")
+# install.packages("car")
+# install.packages("FSSgam")
+# install.packages("devtools")
+# install.packages("MuMIn")
+# install.packages("doBy")
+# install.packages("doSNOW")
+
+# devtools::install_github("UWAMEGFisheries/GlobalArchive") # Run once
+# install.packages(c("vcdExtra", "bbmle", "DescTools"))
+
+library(FSSgam)
+library(tidyverse)
+library(mgcv)
+library(MuMIn)
+library(car)
+library(doBy)
+library(doSNOW)
+library(devtools)
+library(GlobalArchive)
+library(ggplot2)
+library(corrr)
+library(lme4)
+library(MASS)
+library(vcdExtra)
+library(bbmle)
+library(DescTools)
+library(remotes)
+library(gridExtra)
+library(lattice)
+library(corrplot)
+
+
+source("R/data_filtering.R")
+
+#####sample random point from each polygon#####
+all_r_points_with_metadata <- list()
+
+for (i in 1:nrow(fishing_trips)) {
+  
+  polygon <- fishing_trips[i, ]
+  r_points <- st_sample(polygon$geometry, 1)
+  metadata_df <- data.frame(ID = rep(polygon$ID, 1),
+                            yyyy = rep(polygon$yyyy, 1),
+                            mm = rep(polygon$mm, 1),
+                            largest.dhufish.kg = rep(polygon$largest.dhufish.kg, 1),
+                            decade = as.factor(rep(polygon$decade, 1)))
+  r_points_with_metadata <- cbind(metadata_df, geometry = r_points)
+  all_r_points_with_metadata[[i]] <- r_points_with_metadata
+}
+
+single_trip_points <- do.call(rbind, all_r_points_with_metadata)
+glimpse(single_trip_points)
+plot(single_trip_points$geometry)
+
+#####add zones and bathy#####
+
+dt <- single_trip_points %>%
+  st_as_sf() %>%
+  st_join(st_as_sf(perth_zones)) %>%
+  mutate(
+    ID = ID.x,
+    ID.x = NULL,
+    ID.y = NULL,
+    Zone = as.factor(Zone),
+    latitude = st_coordinates(geometry)[, "Y"],
+    echo_sounders = factor(ifelse(yyyy < 1970, "pre", "post"), levels = c("pre", "post")),
+    gps = factor(ifelse(yyyy < 1990, "pre", "post"), levels = c("pre", "post"))
+  ) %>%
+  mutate(
+    bathy = extract(bathy, .)$bathy_cropped1,
+    bathy = ifelse(bathy >= 0, runif(sum(bathy >= 0), min = -10, max = -2), bathy) ##resample positive bathy values
+  ) %>% 
+  arrange(ID) %>% 
+  mutate(depth=bathy*-1,
+         yyyy=as.numeric(yyyy))
+  
+
+glimpse(dt)
+
+
+#####add factors for major rec fishing changes#####
+## add latitude, remove zones? 
+
+#use joes paper to decide on important factors
+#add factor for echo sounder - widespread approx 1969
+#GPS - from 1990
+#bag limits for dhufish decreased to 3 1974
+#braided line introduced ~1985
+#marmion angling club and basic launching facilities
+
+#add factor for boat ramp construction
+
+##### check bathy above zero #####
+
+
+bathy_above_zero <- dt[dt$bathy >= 0, ] ### Plot points with bathy values above zero on basemap
+
+ggplot() +
+  geom_sf(data = WA_base) +  # Basemap
+  geom_sf(data = bathy_above_zero, color = "blue") +  
+  labs(title = "Points with Bathy Values above Zero on WA Base Map") +
+  xlim(114.9851, 115.8) +
+  ylim(-32.7966, -31.30936) +
+  theme_minimal()
+
+
+##### plots by depth classes#####
+
+depth_range_subset <- dt %>%
+  filter(bathy <= 0 & bathy >= -10)
+
+plot(largest.dhufish.kg ~ yyyy, data=depth_range_subset)
+
+depth_range_subset <- dt %>%
+  filter(bathy <= -20 & bathy >= -30)
+
+
+depth_intervals <- seq(0, -200, by = -10)  # Generate depth intervals from 0 to -200 in steps of -10
+
+for (depth_interval in depth_intervals) {
+  lower_bound <- depth_interval
+  upper_bound <- depth_interval - 10
+  
+  depth_subset <- dt %>%
+    filter(bathy >= upper_bound & bathy <= lower_bound)
+  
+  if (nrow(depth_subset) > 0) {  # Check if subset is not empty
+    plot <- ggplot(depth_subset, aes(x = yyyy, y = largest.dhufish.kg)) +
+      geom_point() +
+      labs(title = paste("Depth Range:", lower_bound, "to", upper_bound),
+           x = "Year", y = "Largest Dhufish (kg)")
+    
+    print(plot)
+  }
+}
+
+
+##### plots by zone#####
+ggplot() +
+  geom_point(data = dt, aes(x = st_coordinates(geometry)[, 1], y = st_coordinates(geometry)[, 2], color = Zone), size = 0.5) +
+  geom_sf(data = WA_base, inherit.aes = FALSE) +
+  xlim(114.9851, 115.8) +
+  ylim(-32.7966, -31.30936) +
+  scale_fill_gradient(trans = "log") +
+  labs( x = "Longitude", y = "Latitude") +
+  theme_minimal() 
+
+#####plotting size against year for each zone #####
+
+
+ggplot() +
+  geom_point(data = dt, aes( x = yyyy, y = latitude)) 
+
+ggplot() +
+  geom_point(data = dt, aes( x = latitude, y = largest.dhufish.kg)) 
+
+ggplot() +
+  geom_point(data = dt, aes(x = yyyy, y = largest.dhufish.kg)) +
+  facet_wrap(~Zone, scales = "free_y", nrow = 4) +  # Separate plots for each zone
+  labs(x = "Year", y = "Largest Dhufish (kg)") +
+  theme_minimal()
+
+
+
+##### plotting depth against dhu size for each zone #####
+
+
+plot_list6 <- list()
+
+zones_to_include <- unique(dt$Zone)
+
+# Loop through each zone
+for (i in 1:length(zones_to_include)) {
+  subset_data <- subset(dt, Zone == zones_to_include[i])
+  
+  lm_model <- lm(largest.dhufish.kg ~ bathy, data = subset_data)
+  
+  r_squared <- summary(lm_model)$r.squared
+  
+  intercept <- coef(lm_model)[1]
+  
+  plot <- ggplot(subset_data, aes(x = bathy, y = largest.dhufish.kg)) +
+    geom_point() +
+    geom_smooth(method = "lm", se = FALSE, color = "blue") +  # Add lm line
+    labs(title = zones_to_include[i]) +
+    annotate("text", x = min(subset_data$bathy), y = max(subset_data$largest.dhufish.kg), 
+             label = paste("R2 =", round(r_squared, 3), "\nIntercept =", round(intercept, 3)), 
+             hjust = 0, vjust = 1)  +
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+          panel.background = element_blank(), axis.line = element_line(colour = "black"))
+  
+  # Add the plot to the list
+  plot_list6[[i]] <- plot
+}
+
+# Print the list of plots
+plot_list6
+
+
+
+##### sizing points based on dhufish size  #####
+
+min_fish_size <- min(dt$largest.dhufish.kg) 
+max_fish_size <- max(dt$largest.dhufish.kg)
+
+zones_to_include <- unique(dt$Zone)
+
+overall_bbox <- st_bbox(dt$geometry)
+
+for (i in 1:length(zones_to_include)) {
+  
+  subset_data <- subset(dt, Zone == zones_to_include[i])
+  scaled_sizes <- 1 + 4 * ((subset_data$largest.dhufish.kg - 15) / (max_fish_size - 15))^2
+  plot(subset_data$geometry, pch = 20, cex = scaled_sizes, 
+       col = subset_data$decade,
+       main = paste(zones_to_include[i]),
+       xlim = c(overall_bbox["xmin"], overall_bbox["xmax"]),
+       ylim = c(overall_bbox["ymin"], overall_bbox["ymax"]))
+}
+
+
+
+#####LM#####
+
+
+lm.test <- lm(largest.dhufish.kg ~ yyyy*bathy, data = dt)
+summary(lm.test)
+
+lm.test <- lm(largest.dhufish.kg ~ latitude, data = dt)
+summary(lm.test)
+
+plot(largest.dhufish.kg ~ latitude, data = dt)
+
+# Convert selected columns to numeric if they are not already numeric
+numeric_cols <- c("largest.dhufish.kg", "yyyy", "bathy")
+dt_numeric <- dt[, numeric_cols]
+
+# Convert to numeric
+dt_numeric[] <- lapply(dt_numeric, as.numeric)
+
+# Remove rows with missing values
+dt_numeric <- na.omit(dt_numeric)
+
+# Compute the correlation matrix
+cor_matrix <- cor(dt_numeric)
+
+# Print the correlation matrix
+print(cor_matrix)
+
+# Visualize the correlation matrix as a heatmap
+corrplot(cor_matrix, method = "color")
+
+
+
+cor_matrix <- cor(dt[c("largest.dhufish.kg", "yyyy", "bathy")])
+
+# Visualize the correlation matrix as a heatmap
+corrplot(cor_matrix, method = "color")
+
+par(mfrow = c(1, 1))
+
+plot(lm.test.resid ~ as.factor(dt$Zone), xlab = "Zone",
+     ylab = "Standardized residuals")
+
+abline(0, 0, lty = 2)
+
+
+lm1 <- lm(largest.dhufish.kg ~ bathy, data=subset(dt, Zone=='nearshore_south'))
+summary(lm1)
+
+
+lm1 <- lm(largest.dhufish.kg ~ bathy, data=dt)
+summary(lm1)
+
+plot(largest.dhufish.kg ~ bathy, data=dt)+
+  geom_point()+
+  geom_smooth(method = "lm", se = FALSE, color = "blue") 
+  
+
+ggplot(dt, aes(x = bathy, y = largest.dhufish.kg)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue")
+
+ggplot(dt, aes(x = yyyy, y = largest.dhufish.kg)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue")+
+  geom_smooth(method = "rlm", se = TRUE, color = "blue")+
+  geom_smooth(method = "glm", se = TRUE, color = "blue")+
+  geom_smooth(method = "gam", se = TRUE, color = "blue")
+
+ggplot(dt, aes(x = yyyy, y = bathy)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE, color = "blue")+
+  geom_smooth(method = "rlm", se = TRUE, color = "blue")+
+  geom_smooth(method = "glm", se = TRUE, color = "blue")+
+  geom_smooth(method = "gam", se = TRUE, color = "blue")
+
+
+
+lm_model <- lm(largest.dhufish.kg ~ bathy, data = dt)
+summary(lm_model)
+
+lm_model <- lm(bathy ~ yyyy, data = dt)
+summary(lm_model)
+
+
+plot_list6 <- list()
+
+zones_to_include <- unique(dt$Zone)
+
+for (i in 1:length(zones_to_include)) {
+  subset_data <- subset(dt, Zone == zones_to_include[i])
+  
+  lm_model <- lm(largest.dhufish.kg ~ bathy, data = subset_data)
+  
+  r_squared <- summary(lm_model)$r.squared
+  
+  intercept <- coef(lm_model)[1]
+  
+  p_value_slope <- summary(lm_model)$coefficients[2, 4]
+  
+  lm_summary <- list(R2 = r_squared, Intercept = intercept, P_Value_Slope = p_value_slope)
+  
+  plot <- ggplot(subset_data, aes(x = bathy, y = largest.dhufish.kg)) +
+    geom_point() +
+    geom_smooth(method = "lm", se = FALSE, color = "blue") +  # Add lm line
+    labs(title = zones_to_include[i]) +
+    annotate("text", x = min(subset_data$bathy), y = max(subset_data$largest.dhufish.kg), 
+             label = paste("R2 =", round(r_squared, 3), "\nIntercept =", round(intercept, 3), "\nP-Value =", round(p_value_slope, 3)), 
+             hjust = 0, vjust = 1)  +
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+          panel.background = element_blank(), axis.line = element_line(colour = "black"))
+  
+  plot_list6[[i]] <- list(Plot = plot, LM_Summary = lm_summary)
+}
+
+plot_list6
+
+lm_model <- lm(largest.dhufish.kg ~  bathy*yyyy, data = dt)
+summary(lm_model)
+
+residuals <- residuals(lm_model)
+
+# Create a histogram of residuals
+hist(residuals, breaks = 20, main = "Histogram of Residuals", xlab = "Residuals")
+
+
+mixed_model <- lmer(largest.dhufish.kg ~ yyyy * bathy + (1 | Zone), data = dt)
+summary(mixed_model)
+
+
+
+
+# Fit the longitudinal mixed-effects model
+mixed_model1 <- lmer(largest.dhufish.kg ~ yyyy * depth + (1 | Zone), data = dt)
+mixed_model2 <- lmer(largest.dhufish.kg ~ yyyy  + (1 | Zone), data = dt)
+mixed_model3 <- lmer(largest.dhufish.kg ~ yyyy * bathy + (1 | echo_sounders), data = dt)
+mixed_model3 <- lmer(largest.dhufish.kg ~ yyyy * bathy + (1 | echo_sounders), data = dt)
+
+
+# Summarize the model
+summary(mixed_model1)
+
+
+
+#####GAM#####
+dat <- as.data.frame(dt)  # Convert sf object to data frame
+dat$geometry <- NULL
+
+str(dat)
+glimpse(dat)
+# Set the predictors for modeling
+
+pred.vars <- c("depth", "yyyy") 
+
+# Check the correlations between predictor variables
+summary(dat[,pred.vars])
+
+correlate(dat[,pred.vars], use = "complete.obs")
+
+correlate(dat[,pred.vars], use = "complete.obs") %>%  
+  gather(-term, key = "colname", value = "cor") %>% 
+  dplyr::filter(abs(cor) > 0.5)
+
+# Check the correlations between predictor variables
+correlation_matrix <- cor(dat[, selected_cols], use = "complete.obs")
+print(correlation_matrix)
+
+
+par(mfrow = c(3, 2))
+for (i in pred.vars) {
+  x <- dat[ , i]
+  x = as.numeric(unlist(x))
+  hist((x))
+  plot((x), main = paste(i))
+  hist(sqrt(x))
+  plot(sqrt(x))
+  hist(log(x + 1))
+  plot(log(x + 1))
+}
+
+
+
+use.dat <- as.data.frame(dat) 
+
+
+str(use.dat)
+factor.vars <- c("Zone", "gps", "echo_sounders") # Status as a factors with 2 levels
+
+use.dat[,factor.vars]
+
+# Loop through the FSS function for each Taxa----
+
+  Model1  <- gam(largest.dhufish.kg ~ s(depth, k = 3, bs='cr'),
+                 family = tw(),  data = use.dat)
+summary(Model1)
+  
+  model.set <- generate.model.set(use.dat = use.dat,
+                                  test.fit = Model1,
+                                  pred.vars.cont = pred.vars,
+                                  pred.vars.fact = factor.vars,
+                                  k = 3,
+                                  linear.vars = "depth",
+                                  factor.smooth.interactions = F
+  )
+  out.list <- fit.model.set(model.set,
+                            max.models = 600,
+                            parallel = T)
+  names(out.list)
+
+
+
+

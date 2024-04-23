@@ -1,0 +1,340 @@
+yyyy,mm,Location,Zone,,Fish,number,size,largest.dhufish,largest.dhufish.kg,Reference
+1895,11,Safety Bay,,,Schnapper industry,,,,0,18951102WA
+1896,12,Safety Bay,,,Schnapper industry,,,,0,18961225WM
+1904,7,Perth region,,,jewfish,,,28,12.700576,19040720WA
+1904,,"20 mile steam north-east,offshore or nearshore north",1,,,,,18,8.164656,19040504TM
+1904,,25 mile steam from fremantle,,,jewfish ,,,40,18.14368,19040706WA
+1906,,cottesloe beach ,,,jewfish ,,,26,11.793392,19060224DN
+1908,,SW cape of rottnest,4,,jewfish and schnapper,,,30,13.60776,19080107WA
+1908,4,4-mile buoy on Halls Bank,3,boat,jewfish,1,4 lb,4,1.814368,19080403DN
+1908,,Five Fathom Bank,8,boat,jewfish,,largest 75 lb,75,34.0194,19080327DN
+1908,,Stragglers,6,boat,jewfish,,part of 100lb catch,,0,19080131DN
+1908,,"Rottnest Island, 1 mile south-east",4,,jewfish,4,8lb to 18lb,18,8.164656,19080320DN
+1908,,4-mile buoy on Halls Bank,,boat,schnapper,2,,,0,19080403DN
+1908,,Five Fathom Bank,,boat,schnapper,,,,0,19080327DN
+1908,,"Garden Island, east side",,boat,schnapper,several,largest 12lb & 18 lb,,0,19080131DN
+1908,,off Garden Island,,boat,schnapper,some,up to 10lb,,0,19080320DN
+1908,,off Garden Island,,boat,schnapper,10,up to 4lb,,0,19080320DN
+1908,,Owens Anchorage,,boat,schnapper,8,1.5 lb to 3 lb,,0,19080320DN
+1908,,Stragglers,,boat,schnapper,,part of 100lb catch,,0,19080131DN
+1908,,North Mole,,,schnapper,7,,,0,19080403DN
+1908,,"Rottnest Island, 1 mile south-east",,,schnapper,5,averaging 6 lb,,0,19080320DN
+1910,,"Fremantle, Halls Bank",,,"good for schnapper, jewfish and groper. Where cattle ships clean after discharging livestock",,cod of over 20 lb,,0,19101224WM
+1910,,Five Fathom Bank,8,boat,jewfish,20 fish mixed catch,15-25 lb,25,11.3398,19100409WA
+1910,,"Mandurah, six-mile reef",10,boat,jewfish,2,"largest 41.5 lb, part of 324 lb catch",41.5,18.824068,19100104WA
+1910,,Five Fathom Bank,,boat,schnapper,20 fish mixed catch,5-25 lb,,0,19100409WA
+1910,,"Mandurah, six-mile reef",,boat,schnapper,part of 324 lb mixed catch,largest 28.5 lb,,0,19100104WA
+1911,,Carnac Is area,6,boat,jewfish,,"largest 18 lb, 14 lb & 11 lb. Part of 122 lb catch. ",18,8.164656,19110211WM
+1911,,"Rottnest Island, west of",4,boat,jewfish,,largest 37.5 lb,37.5,17.0097,19110211WM
+1911,,"Fremantle, Halls Bank",3,,jewfish,several,largest 14 lb,14,6.350288,19110909WM
+1911,,"Rottnest Island, south side",4,,jewfish,several,"largest 38 lb, 26 lb, 23 lb",38,17.236496,19110909WM
+1911,,"Rottnest Island, West End",4,,jewfish,1,16 lb,16,7.257472,19110401WA
+1911,,Carnac Is area,,boat,schnapper,,"largest 27.5 lb, part of 122 lb catch",,0,19110211WM
+1911,,"Fremantle, Halls Bank",,boat,schnapper,,14 lb & others over 10 lb,,0,19110506WA
+1911,,"Fremantle, Halls Bank area",,boat,schnapper,,4.5 lb,,0,19110325WM
+1911,,"Fremantle, South Beach",,shore,schnapper,among five dozen mixed fish,3 lb,,0,19110325WM
+1911,,"Marmion, North Beach",,shore,schnapper,35,largest 34.5 lb,,0,19110211WM
+1911,,"Marmion, North Beach",,shore,schnapper,1,16 lb,,0,19110909WM
+1911,,"Fremantle, North Mole",,,schnapper,1,4.5 lb,,0,19110909WM
+1911,,"Fremantle, the old sea jetty",,,schnapper,,small,,0,19110325WM
+1911,,"Rockingham, Penguin Island",,,schnapper,15,averaging 6 lb to 7 lb,,0,19110325WM
+1911,,"Rottnest Island, West End",,,schnapper,9,largest 14 lb,,0,19110401WA
+1912,,"Rottnest Island, West End",,?,groper,3,largest 22 lb,,0,19120129WA
+1912,,"Rottnest Island, West End",,?,groper,1,36 lb (part of 137 lb catch),,0,19120518WA
+1912,,"Carnac Island, Challenger Passage",,boat,groper,1,9 lb (part of 148 lb catch),,0,19120713WM
+1912,,"Carnac Island, Challenger Passage",,boat,groper,1,"9 lb, part of 148 lb catch",,0,19120713WM
+1912,,Rockingham,9,?,jewfish,1,22 lb,22,9.979024,19120518WA
+1912,,"Rottnest Island, West End",4,?,jewfish,4,largest 12 lb,12,5.443104,19120129WA
+1912,,"Rottnest Island, West End",4,?,jewfish,2,part of 137 lb catch,,0,19120518WA
+1912,,South-west passage,4,?,jewfish,2,part of 70 lb catch,,0,19120129WA
+1912,,Carnac Is area,6,boat,jewfish,6,0.25 cwt (part of 2 cwt catch),28,12.700576,19120518WA
+1912,,Carnac Island area,6,boat,jewfish,4,"largest 22 lb, part of 190 lb catch",22,9.979024,19120720WM
+1912,,Carnac Island area,6,boat,jewfish,1,16 lb,16,7.257472,19121115WM
+1912,,Challenger Passage,6,boat,jewfish,,,,0,19121115WM
+1912,,Corsair Rocks,,boat,jewfish,,in a 1 cwt catch,,0,19120504WA
+1912,,Five Fathom Bank,8,boat,jewfish,6,largest 16 lb,16,7.257472,19121115WM
+1912,,Five Fathom Bank,8,boat,jewfish,1,22 lb,22,9.979024,19121227WM
+1912,,Five Fathom Bank area,8,boat,jewfish,several,up to 16lb,16,7.257472,19120504WA
+1912,,"Rockingham, Safety Bay",10,boat,jewfish,16,up to 35 lb (part of 4 cwt catch in 3 days),35,15.87572,19120518WA
+1912,,"Rottnest Island, Bathurst Point area",4,boat,jewfish,1,10 lb,10,4.53592,19120713WM
+1912,,"Rottnest Island, West End",4,boat,jewfish,1,11.5 lb,11.5,5.216308,19120217WM
+1912,,south-west channel,4,boat,jewfish,1,21 lb,21,9.525432,19120217WM
+1912,,South-west passage,4,boat,jewfish,5,largest 27 lb,27,12.246984,19120518WA
+1912,,Carnac Island,6,,jewfish,2,"28 lb, 22 lb, part of 129 lb catch",28,12.700576,19120316WM
+1912,,Carnac Island,6,,jewfish,5,largest 16 lb,16,7.257472,19120316WM
+1912,,"Carnac Island, Challenger Passage",6,,jewfish,,up to 26 lb,26,11.793392,19121122WM
+1912,,Rockingham jetty,9,,jewfish,4,largest 14.5 lb,14.5,6.577084,19120316WM
+1912,,"Rockingham, Safety Bay",10,,jewfish,described as abundant,,,0,19120129WA
+1912,,"Rockingham, Safety Bay",10,,jewfish,19,"largest 39 lb, part of 4 cwt catch",39,17.690088,19120316WM
+1912,,"Rockingham, Safety Bay area",10,,jewfish,1,51 lb,51,23.133192,19120713WM
+1912,,"Rockingham, Safety Bay area",10,,jewfish,3,"35 lb, 40 lb, 51 lb",51,23.133192,19120713WM
+1912,,"Rottnest Island, Bathurst Point",4,,jewfish,1,10 lb,10,4.53592,19120713WM
+1912,,"Rottnest Island, West End (south)",4,,jewfish,,part of 2cwt commercial catch,,0,19120504WA
+1912,,"south-west passage, near Cape Vlamingh",4,,jewfish,9,up to 15 lb,15,6.80388,19120316WM
+1912,,Swan River,,,jewfish,7,largest 14lb,14,6.350288,19120504WA
+1912,,"Marmion, North Beach-Trigg",,beach,john dory,part of 14 dozen catch,,,0,19120504WA
+1912,,Robbs Jetty,,,john dory,,,,0,19120316WM
+1912,,V jetty,,,kingfish,1,12lb,,0,19120504WA
+1912,,the islands' (Perth area),,boat,kingfish (spanish mackerel),1,35 lb,,0,19120518WA
+1912,,Carnac Is area,,boat,mixed catch,,2 cwt total in 2 days,,0,19120518WA
+1912,,off Rottnest Is,,?,schnapper,3 cwt in five hours,up to 24 lb,,0,19120518WA
+1912,,Rockingham,,?,schnapper,3,largest 8.5 lb,,0,19120518WA
+1912,,"Rottnest Island, West End",,?,schnapper,4,part of 137 lb catch,,0,19120518WA
+1912,,South-west passage,,?,schnapper,5,part of 70 lb catch,,0,19120129WA
+1912,,Carnac Island area,,boat,schnapper,9,part of 190 lb catch,,0,19120720WM
+1912,,Carnac Island area,,boat,schnapper,5,averaging 9 lb,,0,19121115WM
+1912,,"Carnac Island, Challenger Passage",,boat,schnapper,1,10 lb (part of 148 lb catch),,0,19120713WM
+1912,,"Carnac Island, Challenger Passage",,boat,schnapper,1,"10 lb, part of 148 lb catch",,0,19120713WM
+1912,,Challenger Passage,,boat,schnapper,3,12lb to 16lb,,0,19121115WM
+1912,,Corsair Rocks,,boat,schnapper,,in a 1 cwt catch,,0,19120504WA
+1912,,Five Fathom Bank,,boat,schnapper,20,up to 17.5lb,,0,19121115WM
+1912,,Five Fathom Bank,,boat,schnapper,2,9 lb & 10.5 lb,,0,19121122WM
+1912,,Five Fathom Bank,,boat,schnapper,1,nearly 22 lb,,0,19121227WM
+1912,,Five Fathom Bank area,,boat,schnapper,several,up to 12lb,,0,19120504WA
+1912,,"Fremantle, Halls Bank",,boat,schnapper,1,17 lb,,0,19120316WM
+1912,,"Fremantle, Halls Bank",,boat,schnapper,32 dozen mixed catch,9 lb,,0,19120720WM
+1912,,"Fremantle, Halls Bank",,boat,schnapper,6,largest 4 lb,,0,19121122WM
+1912,,"Marmion, Little Island",,boat,schnapper,1,6 lb,,0,19120518WA
+1912,,"Marmion, Trigg Island area",,boat,schnapper,3,largest 7.5 lb,,0,19120129WA
+1912,,Robbs Jetty area,,boat,schnapper,4,,,0,19121122WM
+1912,,"Rockingham, Cockburn Sound",,boat,schnapper,1,8 lb,,0,19121122WM
+1912,,"Rockingham, Safety Bay",,boat,schnapper,39,up to 24.5 lb (part of 4 cwt catch in 3 days),,0,19120518WA
+1912,,south-west channel,,boat,schnapper,7,total 93 lb,,0,19120217WM
+1912,,South-west passage,,boat,schnapper,3,average 12 lb,,0,19120518WA
+1912,,the islands' (Perth area),,boat,schnapper,8,5-15 lb,,0,19120518WA
+1912,,the islands' (Perth area),,boat,schnapper,2,17.5 lb & 10 lb (part of 2 cwt catch),,0,19120713WM
+1912,,"Marmion, Trigg Island-North Beach",,shore,schnapper,1,13.5 lb,,0,19120217WM
+1912,,Carnac Island,,,schnapper,3,"largest 14 lb, part of 129 lb catch",,0,19120316WM
+1912,,Carnac Island,,,schnapper,7,largest 12.5 lb,,0,19120316WM
+1912,,"Carnac Island, Challenger Passage",,,schnapper,,nearly 26 lb,,0,19121122WM
+1912,,"Carnac Island, Challenger Passage",,,schnapper,16,"largest 23 lb, part of 2 cwt catch",,0,19121227WM
+1912,,Corsair Rocks,,,schnapper,22,some up to 17 lb,,0,19121227WM
+1912,,Five Fathom Bank,,,schnapper,good catches,,,0,19121115WM
+1912,,"Fremantle, Halls Bank",,,schnapper,1,9 lb,,0,19120518WA
+1912,,"Fremantle, Long Jetty",,,schnapper,1,5 lb,,0,19120316WM
+1912,,Rockingham jetty,,,schnapper,1,13 lb,,0,19120316WM
+1912,,"Rockingham, Safety Bay",,,schnapper,described as abundant,,,0,19120129WA
+1912,,"Rockingham, Safety Bay",,,schnapper,,up to 22 lb,,0,19120217WM
+1912,,"Rockingham, Safety Bay",,,schnapper,34,part of 4 cwt catch,,0,19120316WM
+1912,,"Rockingham, Safety Bay",,,schnapper,commercial catch,up to 19lb,,0,19120504WA
+1912,,"Rockingham, Safety Bay",,,schnapper,5,,,0,19121227WM
+1912,,"Rockingham, Safety Bay area",,,schnapper,,up to 22 lb,,0,19120713WM
+1912,,"Rottnest Island, West End (south)",,,schnapper,,part of 2cwt commercial catch,,0,19120504WA
+1912,,"Rottnest Island, West End (south)",,,schnapper,3,largest 8lb,,0,19120504WA
+1912,,south of Garden Island,,,schnapper,9,up to 16 lb,,0,19120129WA
+1912,,"south-west passage, near Cape Vlamingh",,,schnapper,6,,,0,19120316WM
+1912,,Straggler Reefs,,,schnapper,2,8 lb & 11 lb,,0,19120518WA
+1912,,Trigg Island,,,schnapper,good catches,,,0,19121115WM
+1912,,Challenger Passage to Safety Bay,,,schnapper & jewfish,professional report both 'numerous' in this area,,,0,19121122WM
+1913,,"Carnac Island, Challenger Passage",,,jewfish,5,,,0,19130418WM
+1913,,"Fremantle, Halls Bank",,boat,schnapper,4 (part of 126 dozen catch),largest 8 lb,,0,19130418WM
+1913,,Carnac Island area,,,schnapper,8,between 10 lb & 16 lb,,0,19131219WM
+1913,,"Carnac Island, Challenger Passage",,,schnapper,6,,,0,19130418WM
+1913,,"Fremantle, North Mole",,,schnapper,5,between 7 lb & 14 lb,,0,19131219WM
+1913,,Corsair Rocks,,,schnapper & jewfish,fairly numerous,,,0,19130418WM
+1913,,Five Fathom Bank,,,schnapper & jewfish,fairly numerous',,,0,19130418WM
+1913,,"Rockingham, Safety Bay",,,schnapper & jewfish,fairly numerous',,,0,19130418WM
+1913,,"Rockingham, Safety Bay area",,,schnapper & jewfish,22 fish mixed catch,largest 32 lb schnapper,,0,19130214WM
+1914,,"Five Fathom Bank, Orizaba",8,boat,jewfish,4,one of 16 lb (part of approx 1.5 cwt catch),16,7.257472,19140501WM
+1914,,Mandurah area,10,boat,jewfish,,8 lb to 32 lb,32,14.514944,19140501WM
+1914,,"Carnac Island, Challenger Passage",6,,jewfish,1,24 lb,24,10.886208,19141106WM
+1914,,Elbow Buoy,,,jewfish,1,24 lb,24,10.886208,19141106WM
+1914,,Five Fathom Bank,8,,jewfish,several',up to 24 lb,24,10.886208,19141106WM
+1914,,"Fremantle, Fish Rock",7,,jewfish,1,10 lb,10,4.53592,19140426ST
+1914,,Mandurah area,10,,jewfish,1,30 lb,30,13.60776,19140501WM
+1914,,"Marmion, Trigg Island area",3,,jewfish,3,,,0,19141106WM
+1914,,"Five Fathom Bank, Orizaba",,boat,schnapper,9,part of approx 1.5 cwt catch,,0,19140501WM
+1914,,"Fremantle, Halls Bank",,boat,schnapper,several,largest 8.5 lb,,0,19140501WM
+1914,,Mandurah area,,boat,schnapper,,up to 12 lb,,0,19140501WM
+1914,,"Carnac Island, Challenger Passage",,,schnapper,5,ranging from 12 lb to 18 lb,,0,19141106WM
+1914,,Elbow Buoy,,,schnapper,couple,about 15 lb,,0,19141106WM
+1914,,Five Fathom Bank,,,schnapper,20,ranging from 12 lb to 16 lb,,0,19141106WM
+1914,,"Marmion, Trigg Island area",,,schnapper,7,,,0,19141106WM
+1915,6,"Rockingham, South Channel",8,boat,jewfish,3,averaging 18 lb,,0,19150625WM
+1915,,Straggler Reefs,6,boat,jewfish,1,16 lb,16,7.257472,19150625WM
+1915,,"Carnac Island, Challenger Passage",6,,jewfish,3,,,0,19151112WM
+1915,,Five Fathom Bank,8,,jewfish,3,part of 200 lb catch,,0,19151112WM
+1915,,"Rockingham, Murray Reefs",10,,jewfish,1,27 lb,27,12.246984,19151210WM
+1915,,"Rockingham, Shoalwater Bay",10,,jewfish,1,16 lb,16,7.257472,19150924WM
+1915,4,"Rockingham, Shoalwater Bay area",10,,jewfish,,over 18 lb,18,8.164656,19150423WM
+1915,12,"Rockingham, South Channel area",10,,jewfish,,up to 20 lb,20,9.07184,19151210WM
+1915,,"Marmion, Trigg Island area",,boat,schnapper,16,8 lb to 14 lb,,0,19151210WM
+1915,6,"Rockingham, South Channel",,boat,schnapper,14,total 128 lb,,0,19150625WM
+1915,,Straggler Reefs,,boat,schnapper,2,14 lb & 8 lb,,0,19150625WM
+1915,,"Carnac Island, Challenger Passage",,,schnapper,11,largest 16 lb,,0,19151112WM
+1915,,Five Fathom Bank,,,schnapper,4,ranging 8 lb to 14 lb,,0,19150423WM
+1915,,Five Fathom Bank,,,schnapper,17,part of 200 lb catch,,0,19151112WM
+1915,,"Five Fathom Bank, Coventry Reef",,,schnapper,14,"8 lb to 18 lb, 200 lb total",,0,19151210WM
+1915,,"Fremantle, Halls Bank",,,schnapper,3,largest 12 lb,,0,19150924WM
+1915,,"Marmion, Trigg Island area",,,schnapper,3,up to 10 lb,,0,19150423WM
+1915,,"Marmion, Trigg Island area",,,schnapper,,up to 12 lb,,0,19151112WM
+1915,,"Rockingham, Cape Peron area",,,schnapper,3,,,0,19151112WM
+1915,,"Rockingham, Penguin Island",,,schnapper,couple',,,0,19151210WM
+1915,,"Rockingham, Penguin Island area",,,schnapper,18,14 lb to 24 lb,,0,19150924WM
+1915,9,"Rockingham, Shoalwater Bay",,,schnapper,14,up to 22 lb,,0,19150924WM
+1915,4,"Rockingham, Shoalwater Bay area",,,schnapper,,up to 18 lb ,,0,19150423WM
+1915,12,"Rockingham, South Channel area",,,schnapper,,up to 20 lb,,0,19151210WM
+1915,,"Rockingham, South Channel area",,,schnapper,9,140 lb,,0,19151210WM
+1916,,"Five Fathom Bank, Coventry Reef",,boat,groper,1,26 lb,,0,19161110WM
+1916,,"Five Fathom Bank, Coventry Reef",8,boat,jewfish,6,largest 31 lb,31,14.061352,19160428WM
+1916,,between Penguin Island & Tub Rocks,10,,jewfish,4,,,0,19160114WM
+1916,,Five Fathom Bank,8,,jewfish,couple',,,0,19160204WM
+1916,,Five Fathom Bank,8,,jewfish,3,,,0,19160310WM
+1916,,"Rockingham, Murray Reefs",10,,jewfish,4,part of 150 lb catch,,0,19161110WM
+1916,,"Rockingham, Safety Bay area",10,,jewfish,1,8 lb,8,3.628736,19161110WM
+1916,,"Rottnest Island, West End (south)",4,,jewfish,1,16 lb,16,7.257472,19160121WM
+1916,,"Marmion, North Beach",,,john dory,,,,0,19160310WM
+1916,,"Five Fathom Bank, Coventry Reef",,boat,schnapper,9,12 lb to 22 lb,,0,19160428WM
+1916,,"Five Fathom Bank, Coventry Reef",,boat,schnapper,5,largest 18 lb,,0,19161110WM
+1916,,"Rockingham, Murray Reefs",,boat,schnapper,,up to 18 lb,,0,19160428WM
+1916,,between Penguin Island & Tub Rocks,,,schnapper,9,,,0,19160114WM
+1916,,Five Fathom Bank,,,schnapper,7,up to 14 lb,,0,19160204WM
+1916,,Five Fathom Bank,,,schnapper,1,,,0,19160310WM
+1916,,"Marmion, North Beach",,,schnapper,3,averaging 8 lb,,0,19160310WM
+1916,,Murray Reefs,,,schnapper,16,200lb in total,,0,19160114WM
+1916,,Penguin Island area,,,schnapper,7,8 lb to 14 lb,,0,19160310WM
+1916,,Rockingham area,,,schnapper,4,,,0,19160310WM
+1916,,Rockingham jetty,,,schnapper,1,16 lb,,0,19161110WM
+1916,,"Rockingham, Cape Peron area",,,schnapper,2,,,0,19160317WM
+1916,,"Rockingham, Murray Reefs",,,schnapper,7,part of 150 lb catch,,0,19161110WM
+1916,,"Rockingham, Penguin Island",,,schnapper,3,part of 170 lb catch,,0,19160204WM
+1916,,"Rockingham, Penguin Island",,,schnapper,3,largest 12 lb,,0,19160317WM
+1916,,"Rockingham, Safety Bay area",,,schnapper,9,10 lb to 20 lb,,0,19161110WM
+1916,,"Rottnest Island, Bathurst Point",,,schnapper,9,averaging about 10 lb,,0,19160204WM
+1916,,"Rottnest Island, West End (south)",,,schnapper,3,up to 14 lb,,0,19160121WM
+1916,,"Rottnest Island, West End (south)",,,schnapper,18,,,0,19160428WM
+1917,,"Rockingham, Murray Reefs",10,boat,jewfish,5,largest 22 lb,22,9.979024,19170518WM
+1917,,"Rottnest Island, Bathurst Point",4,boat,jewfish,5,largest 22 lb,22,9.979024,19171026WM
+1917,,Straggler Reefs,6,boat,jewfish,3,"8.5 lb, 14 lb & 18 lb",18,8.164656,19170518WM
+1917,,Champion Buoy,4,,jewfish,3,,,0,19171026WM
+1917,,Rockingham area,9,,jewfish,,up to 22 lb,22,9.979024,19171026WM
+1917,,Rockingham area,9,,jewfish,,up to 22 lb,22,9.979024,19171026WM
+1917,,Mewstone,,boat,John dory,3 dozen,,,0,19171026WM
+1917,,Mewstone,,boat,schnapper,1,6 lb,,0,19171026WM
+1917,,"Rockingham, Murray Reefs",,boat,schnapper,8,8 lb to 1 lb,,0,19170518WM
+1917,,"Rottnest Island, Bathurst Point",,boat,schnapper,17,from 6 lb to 16 lb,,0,19171026WM
+1917,,Straggler Reefs,,boat,schnapper,a couple',about 6 lb,,0,19170518WM
+1917,,Champion Buoy,,,schnapper,11,,,0,19171026WM
+1917,,Rockingham area,,,schnapper,,up to 22 lb,,0,19171026WM
+1917,,Rottnest Island,,,schnapper,14,6 lb to 18 lb,,0,19171026WM
+1918,,Rottnest Island,,boat,blue-spotted groper,2,one of 8lb,,0,19180208WM
+1918,,Rottnest Island,,boat,groper,2,,,0,19180208WM
+1918,,Rottnest Island,4,boat,jewfish,6,,,0,19180208WM
+1918,,"Rottnest Island, West End",4,boat,jewfish,,part of two 4 cwt catches,,0,19180208WM
+1918,,Rottnest Island,,boat,john dory,2,,,0,19180208WM
+1918,,"Rockingham, Penguin Island",,boat,kingfish,part of 300 fish catch,,,0,19180208WM
+1918,,Rottnest Island,,boat,red-fin groper,4,,,0,19180208WM
+1918,,Rottnest Island,,boat,rock snapper,5,,,0,19180208WM
+1918,,"Rottnest Island, West End",,boat,schnapper,,part of two 4 cwt catches,,0,19180208WM
+1918,,Rockingham,,,schnapper,14,largest 16lb,,0,19180208WM
+1918,,Rottnest Island,,boat,snapper,11,,,0,19180208WM
+1919,,Perth region,,boat,jewfish and others,,,22,9.979024,19190329WA
+1919,5,Perth region,,boat,jewfish and others,,,30,13.60776,19190523WA
+1919,11,Stragglers,6,boat,jewfish and others,,,17,7.711064,19191114WA
+1920,,stragglers,6,boat,jewfish and others,,,14,6.350288,19200415WA
+1921,,chmpion reef (rottnest?),4,boat,jewfish and others,,,18,8.164656,19210413WA
+1922,,champion or kingston reefs,4,boat,jewfish and others,,,26,11.793392,19220421WA
+1923,,champion reef,4,boat,jewfish and others,,,21,9.525432,19230208WA
+1924,,"Safety Bay, Coventry, Five Fathom Bank, Garden Island",,boat,jewfish,1,36 lb,36,16.329312,19240424WA
+1924,,Stragglers,6,boat,jewfish,,,6,2.721552,19240829WA
+1925,,Kingston reef,4,boat,jewfish,,,8,3.628736,19250214WA
+1926,,Roe reef,4,boat,jewfish,,,36,16.329312,19261119WA
+1927,,champion reef,4,boat,jewfish,,,8,3.628736,19271019WA
+1928,,"five fathom back, near garden island",8,boat,jewfish,,,35,15.87572,19281011WA
+1930,9,Rottnest Island,4,boat,jewfish,1,40 lb,40,18.14368,19300930DN
+1931,,Rottnest Island area,4,boat,jewfish,,catch totalling 138 lb,,0,19310114WA
+1931,,Penguin island passage,9,,jewfish,,,12,5.443104,19310620BSDW
+1935,,Rottnest Island,,,blue groper,1,,,0,19350314WM
+1935,,Rockingham,,,kingfish,1,40lb,,0,19350427WA
+1936,,"off rottnest, 10 miles from island",,,jewfish,,,20,9.07184,19360223WA
+1936,,Rottnest Island,4,boat,jewfish,1,30 lb,30,13.60776,19541007WA
+1939,,south end of Penguin Island,,,kingfish,1,64lb,,0,19390411WA
+1947,,Marmion Bay,3,small boat,jewfish,4,averaging 15 lb,15,6.80388,19470320WA
+1951,,"Marmion, Watermans Bay",,spearfish,crayfish,1,8.5lb,,0,19521009WA
+1951,,outside Fremantle,6,boat,jewfish,2,14lb & 3lb,14,6.350288,19510212WA
+1951,,"Rottnest Island, Geordie Bay",4,boat,jewfish,1,35 lb,35,15.87572,19541007WA
+1952,,Rottnest Island,,boat,blue whaler sharks,9,20-30lb,,0,19520602WA
+1952,,"Marmion, Watermans Bay",,spearfish,crayfish,1,7lb,,0,19521009WA
+1952,,"Rottnest Island, Green Island",,spearfish,groper,1,40 lb,,0,19520416WA
+1952,,"Rottnest Island, Stark Bay",,spearfish,groper,1,55 lb,,0,19520416WA
+1952,,Carnac Island area,6,boat,jewfish,1,,,0,19520703WA
+1952,7,"Carnac Island, sandpatch",6,boat,jewfish,1,15 lb,15,6.80388,19520703WA
+1952,,"Green Island Bay, Rottnest Island",4,boat,jewfish,1,23 lb,23,10.432616,19520501WA
+1952,,off Rottnest Island ,4,boat,jewfish,5,largest 29.25 lb,29.25,13.267566,19520925WA
+1952,,"off West End, Rottnest",4,boat,jewfish,,,,0,19520522WA
+1952,,"off West End, Rottnest",4,boat,jewfish,14,"130 lb total, largest 27 lb",27,12.246984,19520501WA
+1952,7,"Porpoise Bay, Rottnest Island",4,boat,jewfish,1,,,0,19520703WA
+1952,,Rottnest Island,4,boat,jewfish,14,"total of 130lb, largest 27lb",27,12.246984,19520501WA
+1952,,Rottnest Island,4,boat,jewfish,4,largest 27lb,27,12.246984,19520602WA
+1952,,Rottnest Island,4,boat,jewfish,1,15 lb,15,6.80388,19520626WA
+1952,,"Rottnest Island, Geordie Bay",4,boat,jewfish,1,42 lb,42,19.050864,19541007WA
+1952,,"Rottnest Island, Porpoise Bay",4,boat,jewfish,1,,,0,19520703WA
+1952,,"Rottnest Island, West End area",4,boat,jewfish,1,23lb,23,10.432616,19520501WA
+1952,,"Green Island Bay, Rottnest Island",4,set line,jewfish,1,estimated 60 lb,60,27.21552,19520501WA
+1952,,Rottnest Island,4,spearfish,jewfish,1,18 lb,18,8.164656,19520416WA
+1952,,"Rockingham, Safety Bay outer reefs",10,,jewfish,1,25 lb,25,11.3398,19520424WA
+1952,,"Rottnest Island, Narrow Neck area",,boat,mako,1,"6 ft 4 in, about 120 lb",,0,19520807WA
+1952,,"Metro, Swanbourne",,beach?,mullaway (river kingfish),1,12.5 lb,,0,19520925WA
+1952,,off Rottnest Island ,,boat,sea kingfish,1,46 lb,,0,19520925WA
+1952,,"off West End, Rottnest",,boat,sea kingfish,1,35lb,,0,19520522WA
+1952,,off Rottnest Island ,,boat,snapper,1,11.5 lb,,0,19520925WA
+1952,,off Rottnest Island ,,boat,snapper,12,,,0,19520925WA
+1952,,"off West End, Rottnest",,boat,Snapper,,,,0,19520522WA
+1952,,"Metro, City Beach",,shore ,snapper,1,17.25 lb,,0,19520515WA
+1952,,"Rockingham, Safety Bay outer reefs",,,snapper,several,up to 14 lb,,0,19520424WA
+1952,,Rockingham/Garden Is channel,,,snapper,4,up to 22lb,,0,19520424WA
+1952,,off Rottnest,,boat,Spanish mackerel,5,one of 48lb,,0,19520522WA
+1952,,Rottnest Island,,boat,spanish mackerel,2,38 lb & 40 lb,,0,19520626WA
+1952,,"Rottnest Island, West End area",,boat,spanish mackerel,,largest 53 lb (part of nearly 0.5 ton catch),,0,19520515WA
+1952,,off Rottnest Island ,,boat,white groper,1,10 lb,,0,19520925WA
+1952,,"Fremantle, North Mole area",,,white groper,8,,,0,19520602WA
+1952,,Yanchep,,,,comments about how depleted the fishing is now,,,0,19520602WA
+1953,,"Rottnest Island, West End",,,blue groper,1,37 lb,,0,19530604WA
+1953,,"Rottnest Island, Thompson Bay",,boat,groper,1,55 lb,,0,19530429WA
+1953,,"Rottnest Island, Thompson Bay",,,groper,1,56 lb,,0,19530429WA
+1953,,Rottnest Island,4,?,jewfish,11,,,0,19530826WA
+1953,,off Rottnest Island,4,boat,jewfish,13,,,0,19530826WA
+1953,,Rottnest Island area,4,boat,jewfish,7,one 28 lb and 8 lb,28,12.700576,19530429WA
+1953,,"Rottnest Island, West End",4,boat,jewfish,14,2 of 35 lb,35,15.87572,19530826WA
+1953,,"Rottnest Island, West End area",4,boat,jewfish,11,on of 28 lb,28,12.700576,19540415WA
+1953,,"Rottnest Island, Clune Point",4,,jewfish,1,ca. 50 lb,50,22.6796,19530429WA
+1953,,"Rottnest Island, Porpoise Bay",,boat,Queensland groper,1,"644 lb, 7 ft 6 in",,0,19530708WA
+1953,,off Rottnest Is,,boat,snapper,14,averaging 12 lb,,0,19530429WA
+1953,,off Rottnest Island,,boat,snapper,12,,,0,19530826WA
+1953,,Rottnest Island,,?,spanish mackerel,1,approx 60 lb,,0,19530826WA
+1953,,off Rottnest Is,,boat,spanish mackerel,10,,,0,19530429WA
+1953,,off Rottnest Is,,boat,spanish mackerel,5,,,0,19530429WA
+1953,,off Rottnest Is,,boat,spanish mackerel,4,largest 42 lb,,0,19530429WA
+1953,,Rottnest Island,,boat,spanish mackerel,2,,,0,19530604WA
+1953,,"Rottnest Island, south side",,boat,spanish mackerel,1,28 lb,,0,19540415WA
+1953,,"off South Cottesloe, just beyond the reef",,dinghy rowed from shore,spanish mackerel,"100 over a decade, 20 in the best year",one of 45 lb,,0,19530527WA
+1953,,Rottnest Island,,boat,tunny,1,48 lb,,0,19530604WA
+1953,,"Rottnest Island, Porpoise Bay",,boat,whaler shark,1,300 lb,,0,19530708WA
+1953,,"Rottnest Island, Porpoise Bay",,boat,whaler shark,1,3 ft 6 in,,0,19530708WA
+1954,,"miles off West End, Rottnest Is",,boat,bald-faced groper,6,,,0,19540415WA
+1954,,Rottnest Island area (8 miles north),,boat,bald-faced groper,3,part of 245 lb catch in 5 hours,,0,19540112WA
+1954,6,"Rottnest Island, north side",,shore?,blue groper,1,52.5 lb,,0,19540603WA
+1954,,Marmion Reef,,spearfish,crayfish,1,8.5 lb,,0,19541221WA
+1954,,Rottnest Island,,spearfish,groper,3,largest 44.5lb,,0,19540204WA
+1954,,"miles off West End, Rottnest Is",1,boat,jewfish,43 in four days,total about 450 lb,,0,19540415WA
+1954,,off Scarborough,,boat,jewfish,3,18 lb,18,8.164656,19540527WA
+1954,,Rottnest Island,4,boat,jewfish,1,38 lb,38,17.236496,19540415WA
+1954,,Rottnest Island,4,boat,jewfish,2,45 lb & 40 lb,45,20.41164,19540624WA
+1954,,Rottnest Island area (8 miles north),4,boat,jewfish,14,"18 lb, 38 lb, 35 lb, 32 lb (part of 245 lb catch in 5 hours)",38,17.236496,19540112WA
+1954,9,"Rottnest Island, West End area",4,boat,jewfish,2,33 lb & 24 lb,33,14.968536,19540923WA
+1954,,Rottnest Island,4,shore,jewfish,3,"17 lb, 15 lb & 22 lb",22,9.979024,19540708WA
+1954,,Rottnest Island,4,shore?,jewfish,1,32 lb,32,14.514944,19540603WA
+1954,,"Rottnest Island, Clune Point",4,spearfish,jewfish,1,32.5lb,32.5,14.74174,19540204WA
+1954,,"Marmion, Little Island area",3,,jewfish,1,65 lb,65,29.48348,19540624WA
+1954,4,"Geraldton, near the lighthouse",,,lobster,1,9.25 lb,,0,19540421WA
+1954,,"Rottnest Island, Green Island area",,spearfish,sea kingfish,1,40lb,,0,19540204WA
+1954,,"miles off West End, Rottnest Is",,boat,snapper,12,,,0,19540415WA
+1954,,"Fremantle, North Mole",,shore,snapper,1,9 lb,,0,19541007WA
+1954,,"Rockingham, Waikiki Beach",,shore,snapper,1,32 lb,,0,19540617WA
+1954,,"Marmion, Trigg Island area",,boat,spanish mackerel,1,28 lb,,0,19540527WA
+1954,,Mandurah,,,stingray,1,43 lb,,0,19541007WA
+1954,,"Metro, Cottesloe",,,stingray,1,73 lb,,0,19541007WA
+?,,"Rottnest Island, Dyer Island area",4,boat,jewfish,ca 62 caught over 6 weeks. 8 at one time.,"big', ca 20 lb",,0,19541007WA
+1955,,Rottnest Island ,4,,jewfish,,34,34,15.422128,19550910DN
+1955,,Off marmion,3,dinghy,jewfish,,,28,12.700576,19550716DN
+1955,,yanchep,2,,jewfish ,,,15,6.80388,19551119DN

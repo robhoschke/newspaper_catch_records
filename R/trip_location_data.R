@@ -1,6 +1,8 @@
 install.packages("sf")
 install.packages("spatstat")
 install.packages("paletteer")
+install.packages("maps")
+install.packages("ozmaps")
 
 library(paletteer)
 library(spatstat)
@@ -14,16 +16,26 @@ library(EnvStats)
 library(gridExtra)
 library(car)
 library(ggpubr)
+library(maps)
+library(ozmaps)
+
+aus <- ozmap(x = "states",add = FALSE)
+
+
+st_crs(aus)
+st_crs(aus)
+glimpse(aus)
 
 getwd()
 dhu_records <- read.csv('data/all_dhufish_records_edited.csv')
 trip_location <- st_read('Qgis/shp/trip_location_estimate_complete.shp')
-glimpse(trip_location)
-st_crs(trip_location)
-head(trip_location)
-plot(trip_location)
 WA_base <- st_read('Qgis/shp/basemap.shp')
 st_crs(WA_base)
+
+##### join spatial data #####
+
+fishing_trips <- left_join(trip_location, dhu_records, by = c("ID") )
+glimpse(fishing_trips)
 
 dhu_with_location <- merge(dhu_records, trip_location, by = c("ID"))
 glimpse(dhu_with_location)
@@ -151,6 +163,9 @@ str(trip_points)
 str(trip_location)
 str(WA_base)
 
+
+plot(map_data("world"))
+
 p2 <- 
   ggplot() +
   geom_sf(data = WA_base) +
@@ -177,6 +192,9 @@ for (d in decades_to_include) {
     plots_list4[[d]] <- p 
   
 }
+
+
+
 
 n_col <- 3  
 plots_matrix <- matrix(plots_list4, nrow = ceiling(length(plots_list4) / n_col), byrow = TRUE)
