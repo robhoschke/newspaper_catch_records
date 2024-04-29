@@ -185,18 +185,18 @@ ordered_data <- data[order(data$yyyy), ]
       stat_density_2d(data = subset_data, aes(x = st_coordinates(geometry)[, 1], y = st_coordinates(geometry)[, 2],fill = ..density..), bins = 45, geom = "raster", contour = FALSE, show.legend = FALSE) +
       geom_contour(data = bathy_df_coarse, aes(x=x, y=y, z = z), breaks = contour_levels, colour='white', linewidth = 0.1) +
       geom_text_contour(data = bathy_df_coarse, aes(x = x, y = y, z = z), 
-                        breaks = contour_levels, size = 1.5,
+                        breaks = contour_levels, size = 0.8,
                         colour = 'white',
                         label.placer = label_placer_n(1)) +
       geom_sf(data = WA_base, inherit.aes = FALSE) +
       labs(title = paste(d), x = "Longitude", y = "Latitude") +
       paletteer::scale_fill_paletteer_c("viridis::plasma") +
-      annotate(geom = "text", x = c(115.8,115.85,115.85, 115.9, 115.8 ), y = c(-31.5,-31.8, -31.9, -32.3, -32.6 ), label = c("Two Rocks","Hillarys","Perth", "Rockingham", "Mandurah" ), size = 1.5) +
+      annotate(geom = "text", x = c(115.78,115.85,115.85, 115.85, 115.83, 115.78 ), y = c(-31.5,-31.8, -31.9, -32.06, -32.29, -32.6 ), label = c("Two Rocks","Hillarys","Perth", "Fremantle", "Rockingham", "Mandurah" ), size = 0.8) +
       coord_sf(xlim = c(114.9851, 115.9),
               ylim = c(-32.7966, -31.30936))+
       # xlim(114.9851, 115.8) +
       # ylim(-32.7966, -31.30936) +
-      theme_minimal(base_size=5) +
+      theme_minimal(base_size=3) +
       theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
             panel.background = element_blank())
     

@@ -18,7 +18,7 @@
 # install.packages("doSNOW")
 
 # devtools::install_github("UWAMEGFisheries/GlobalArchive") # Run once
-# install.packages(c("vcdExtra", "bbmle", "DescTools"))
+install.packages(c("vcdExtra", "bbmle", "DescTools", "gridExtra","corrplot"))
 
 library(FSSgam)
 library(tidyverse)
@@ -41,6 +41,7 @@ library(gridExtra)
 library(lattice)
 library(corrplot)
 
+devtools::install_github("GlobalArchiveManual/CheckEM") ###failed
 
 source("R/data_filtering.R")
 
@@ -75,6 +76,7 @@ dt <- single_trip_points %>%
     ID.y = NULL,
     Zone = as.factor(Zone),
     latitude = st_coordinates(geometry)[, "Y"],
+    scientific = "fish.size",
     echo_sounders = factor(ifelse(yyyy < 1970, "pre", "post"), levels = c("pre", "post")),
     gps = factor(ifelse(yyyy < 1990, "pre", "post"), levels = c("pre", "post"))
   ) %>%
@@ -363,83 +365,126 @@ summary(mixed_model)
 
 
 
-# Fit the longitudinal mixed-effects model
+# mixed-effects model
 mixed_model1 <- lmer(largest.dhufish.kg ~ yyyy * depth + (1 | Zone), data = dt)
 mixed_model2 <- lmer(largest.dhufish.kg ~ yyyy  + (1 | Zone), data = dt)
 mixed_model3 <- lmer(largest.dhufish.kg ~ yyyy * bathy + (1 | echo_sounders), data = dt)
 mixed_model3 <- lmer(largest.dhufish.kg ~ yyyy * bathy + (1 | echo_sounders), data = dt)
 
 
-# Summarize the model
 summary(mixed_model1)
 
 
 
 #####GAM#####
-dat <- as.data.frame(dt)  # Convert sf object to data frame
-dat$geometry <- NULL
+tidy.count <- dat 
+tidy.count$response <- "fish_size"
+glimpse(tidy.count)
+sum(is.na(tidy.count$bathy))
+sum(is.na(tidy.count$largest.dhufish.kg))
+sum(is.na(tidy.count$yyyy))
+sum((is.na(tidy.count$latitude)))
 
-str(dat)
-glimpse(dat)
-# Set the predictors for modeling
 
-pred.vars <- c("depth", "yyyy") 
+pred.vars <- c("bathy", "yyyy", "latitude") 
 
-# Check the correlations between predictor variables
 summary(dat[,pred.vars])
 
-correlate(dat[,pred.vars], use = "complete.obs")
-
-correlate(dat[,pred.vars], use = "complete.obs") %>%  
-  gather(-term, key = "colname", value = "cor") %>% 
-  dplyr::filter(abs(cor) > 0.5)
-
-# Check the correlations between predictor variables
-correlation_matrix <- cor(dat[, selected_cols], use = "complete.obs")
-print(correlation_matrix)
+round(cor(tidy.count[ , pred.vars]), 2)
 
 
-par(mfrow = c(3, 2))
-for (i in pred.vars) {
-  x <- dat[ , i]
-  x = as.numeric(unlist(x))
-  hist((x))
-  plot((x), main = paste(i))
-  hist(sqrt(x))
-  plot(sqrt(x))
-  hist(log(x + 1))
-  plot(log(x + 1))
+unique.vars <- unique(as.character(tidy.count$response))
+
+resp.vars <- character()
+for(i in 1:length(unique.vars)){
+  temp.dat <- tidy.count[which(tidy.count$response == unique.vars[i]), ]
+  if(length(which(temp.dat$largest.dhufish.kg == 0)) / nrow(temp.dat) < 0.8){
+    resp.vars <- c(resp.vars, unique.vars[i])}
 }
+resp.vars
+
+outdir <- ("outputs") 
+out.all <- list()
+var.imp <- list()
 
 
+####run full subset model selection process####
 
-use.dat <- as.data.frame(dat) 
-
-
-str(use.dat)
-factor.vars <- c("Zone", "gps", "echo_sounders") # Status as a factors with 2 levels
-
-use.dat[,factor.vars]
-
-# Loop through the FSS function for each Taxa----
-
-  Model1  <- gam(largest.dhufish.kg ~ s(depth, k = 3, bs='cr'),
-                 family = tw(),  data = use.dat)
-summary(Model1)
+for(i in 1:length(resp.vars)){
+  use.dat = as.data.frame(tidy.count[which(tidy.count$response == resp.vars[i]),])
+  print(resp.vars[i])
+  
+  Model1  <- gam(largest.dhufish.kg ~ s(bathy, k = 3, bs = 'cr'),
+                 family = gaussian(link = "identity"),  data = use.dat)
   
   model.set <- generate.model.set(use.dat = use.dat,
                                   test.fit = Model1,
                                   pred.vars.cont = pred.vars,
-                                  pred.vars.fact = factor.vars,
-                                  k = 3,
-                                  linear.vars = "depth",
-                                  factor.smooth.interactions = F
-  )
+                                  factor.smooth.interactions = NA,
+                                  cyclic.vars = "aspect",
+                                  k = 3)
   out.list <- fit.model.set(model.set,
                             max.models = 600,
                             parallel = T)
   names(out.list)
+  
+  out.list$failed.models 
+  mod.table = out.list$mod.data.out 
+  mod.table = mod.table[order(mod.table$AICc),]
+  mod.table$cumsum.wi = cumsum(mod.table$wi.AICc)
+  out.i = mod.table[which(mod.table$delta.AICc <= 2),]
+  out.all = c(out.all,list(out.i))
+  var.imp = c(var.imp,list(out.list$variable.importance$aic$variable.weights.raw))
+  
+  for(m in 1:nrow(out.i)){
+    best.model.name = as.character(out.i$modname[m])
+    png(file = here::here(paste(outdir, paste(name, m, resp.vars[i], "mod_fits.png", sep = "_"), sep = "/")))
+    if(best.model.name != "null"){
+      par(mfrow = c(3,1), mar = c(9, 4, 3, 1))
+      best.model = out.list$success.models[[best.model.name]]
+      plot(best.model, all.terms = T,pages = 1,residuals = T,pch = 16)
+      mtext(side = 2, text = resp.vars[i], outer = F)}  
+    dev.off()
+  }
+}
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+#####without loop#####
+
+glimpse(use.dat)
+factor.vars <- c("Zone", "gps", "echo_sounders") 
+
+use.dat$response <- "fish_size"
+Model1 <- gam(largest.dhufish.kg ~ s(yyyy, bs = "cr", k=3),
+              family = gaussian(), data = use.dat)
+
+summary(Model1)
+
+plot(Model1, se = TRUE, col = "blue")
+
+
+model.set <- generate.model.set(use.dat = use.dat,
+                                max.predictors = 2,
+                                test.fit = Model1,
+                                pred.vars.cont = pred.vars,  
+                                pred.vars.fact = factor.vars,    
+                                linear.vars = "yyyy",          
+                                k = 3,
+                                cov.cutoff = 0.3,
+                                factor.smooth.interactions = FALSE) 
+
+
+out.list <- fit.model.set(model.set,parallel = TRUE)
