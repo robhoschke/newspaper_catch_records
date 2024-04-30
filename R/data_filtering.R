@@ -39,13 +39,15 @@ library(terra)
 ##### import data#####
 dhu_records <- read.csv('data/all_dhufish_records_edited.csv')
 metro_area <- st_read('Qgis/shp/perth_metro.shp')
-perth_zones <- st_read('Qgis/shp/perth_rec_fsihing_zones.shp') 
+###perth_zones <- st_read('Qgis/shp/perth_rec_fsihing_zones.shp') ## old zones
+perth_zones <- st_read('Qgis/shp/rec_zones_fewer.shp') 
 trip_location <- st_read('Qgis/shp/trip_location_estimate_complete.shp')
 WA_base <- st_read('Qgis/shp/basemap.shp')
 bathy <- rast("Qgis/raster/bathy_cropped1.tif")
 
 ##### crop trip locations to remove land #####
 #still going to be some overlap, where the bathy does not align with the basemap
+glimpse(dhu_records)
 cropped_trip_location <- st_intersection(trip_location, metro_area) 
 glimpse(cropped_trip_location)
 

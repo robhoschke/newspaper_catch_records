@@ -1,7 +1,7 @@
 ###
 # Project: Historical recreational fishing
 # Data:    historical fish size data
-# Task:    modelling fish size
+# Task:    experimental modelling fish size
 # Author:  Rob
 # Date:    April 2024
 ##
@@ -41,11 +41,13 @@ library(gridExtra)
 library(lattice)
 library(corrplot)
 
-devtools::install_github("GlobalArchiveManual/CheckEM") ###failed
+#devtools::install_github("GlobalArchiveManual/CheckEM") ###failed
 
 source("R/data_filtering.R")
 
 #####sample random point from each polygon#####
+glimpse(fishing_trips)
+
 all_r_points_with_metadata <- list()
 
 for (i in 1:nrow(fishing_trips)) {
@@ -71,9 +73,6 @@ dt <- single_trip_points %>%
   st_as_sf() %>%
   st_join(st_as_sf(perth_zones)) %>%
   mutate(
-    ID = ID.x,
-    ID.x = NULL,
-    ID.y = NULL,
     Zone = as.factor(Zone),
     latitude = st_coordinates(geometry)[, "Y"],
     scientific = "fish.size",
@@ -158,6 +157,20 @@ ggplot() +
   scale_fill_gradient(trans = "log") +
   labs( x = "Longitude", y = "Latitude") +
   theme_minimal() 
+
+
+sum(dt$Zone=="offshore_south")
+
+unique_zones <- unique(dt$Zone)
+Zone_sums <- list()
+
+for(i in unique_zones) {
+  fact_sums <- sum(dt$Zone==i)
+  Zone_sums[[i]] <- fact_sums
+}
+
+sum(dt$Zone=="nearshore_north")
+
 
 #####plotting size against year for each zone #####
 
