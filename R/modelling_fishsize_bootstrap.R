@@ -10,7 +10,7 @@ source("R/data_filtering.R")
 
 #####model selection#####
 
-predictors <- c("yyyy", "Zone", "bathy")  # List of predictor variables
+predictors <- c("yyyy", "Zone")  # List of predictor variables
 interaction_terms <- combn(predictors, 2, paste, collapse = ":")  # Generate all pairwise interactions
 
 all_terms <- c(predictors, interaction_terms)
