@@ -8,7 +8,7 @@
 
 source("R/data_filtering.R")
 
-##### random points for each polygon#####
+##### random points for each polygon#####             ####should I generate 10 random points or a single point for the heatmap??
 all_random_points_with_metadata <- list()
 
 for (i in 1:nrow(fishing_trips)) {
@@ -39,6 +39,7 @@ mutate(
 
 ###########can't arrange data
 summary(data$bathy)
+plot(largest.dhufish.kg~yyyy, data=data)
 
 ##### sample of points for heatmaps#####
 
@@ -206,3 +207,56 @@ ordered_data <- data[order(data$yyyy), ]
 
     plot3 <- lapply(plots_list5, ggplotGrob)
     grid.arrange(grobs = plot3, ncol = 6, nrow = 1)
+    
+    
+    
+    
+    
+    
+    
+    breaks <- c(1900, 1950, 1960, 1970, 1990, 2005, 2011)
+    ordered_data$period <- cut(ordered_data$yyyy, breaks = breaks, labels = c("1900-1949", "1950-1959","1960-1969", "1970-1989", "1990-2004", "2005-2011"))
+    sum(ordered_data$period=="1900-1949")
+    sum(ordered_data$period=="1950-1959")
+    sum(ordered_data$period=="1960-1969")
+    sum(ordered_data$period=="1970-1989")
+    sum(ordered_data$period=="1990-2004")
+    sum(ordered_data$period=="2005-2011")
+    
+    
+    periods_to_include <- unique(c(ordered_data$period))
+    
+    ###generate plot
+    
+    plots_list5 <- list()
+    
+    for (d in periods_to_include) {
+      subset_data <- subset(ordered_data, period %in% d)
+      
+      p <-  ggplot() +
+        stat_density_2d(data = subset_data, aes(x = st_coordinates(geometry)[, 1], y = st_coordinates(geometry)[, 2],fill = ..density..), bins = 45, geom = "raster", contour = FALSE, show.legend = FALSE) +
+        geom_contour(data = bathy_df_coarse, aes(x=x, y=y, z = z), breaks = contour_levels, colour='white', linewidth = 0.1) +
+        geom_text_contour(data = bathy_df_coarse, aes(x = x, y = y, z = z), 
+                          breaks = contour_levels, size = 0.8,
+                          colour = 'white',
+                          label.placer = label_placer_n(1)) +
+        geom_sf(data = WA_base, inherit.aes = FALSE) +
+        labs(title = paste(d), x = "Longitude", y = "Latitude") +
+        paletteer::scale_fill_paletteer_c("viridis::plasma") +
+        annotate(geom = "text", x = c(115.78,115.85,115.85, 115.85, 115.83, 115.78 ), y = c(-31.5,-31.8, -31.9, -32.06, -32.29, -32.6 ), label = c("Two Rocks","Hillarys","Perth", "Fremantle", "Rockingham", "Mandurah" ), size = 0.8) +
+        coord_sf(xlim = c(114.9851, 115.9),
+                 ylim = c(-32.7966, -31.30936))+
+        # xlim(114.9851, 115.8) +
+        # ylim(-32.7966, -31.30936) +
+        theme_minimal(base_size=3) +
+        theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+              panel.background = element_blank())
+      
+      plots_list5[[d]] <- p 
+      
+    }
+    
+    plot3 <- lapply(plots_list5, ggplotGrob)
+    grid.arrange(grobs = plot3, ncol = 6, nrow = 1)
+    
+    

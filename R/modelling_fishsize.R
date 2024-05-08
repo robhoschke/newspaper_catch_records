@@ -18,7 +18,7 @@
 # install.packages("doSNOW")
 
 # devtools::install_github("UWAMEGFisheries/GlobalArchive") # Run once
-install.packages(c("vcdExtra", "bbmle", "DescTools", "gridExtra","corrplot"))
+#install.packages(c("vcdExtra", "bbmle", "DescTools", "gridExtra","corrplot"))
 
 library(FSSgam)
 library(tidyverse)
@@ -45,68 +45,21 @@ library(corrplot)
 
 source("R/data_filtering.R")
 
-#####sample random point from each polygon#####
-glimpse(fishing_trips)
 
-all_r_points_with_metadata <- list()
+###plot centroids by zone
+ggplot() +
+  geom_point(data = dat, aes(x = st_coordinates(geometry)[, 1], y = st_coordinates(geometry)[, 2], color = Zone), size = 0.5) +
+  geom_sf(data = WA_base, inherit.aes = FALSE) +
+  xlim(114.9851, 115.8) +
+  ylim(-32.7966, -31.30936) +
+  scale_fill_gradient(trans = "log") +
+  labs( x = "Longitude", y = "Latitude") +
+  theme_minimal() 
 
-for (i in 1:nrow(fishing_trips)) {
-  
-  polygon <- fishing_trips[i, ]
-  r_points <- st_sample(polygon$geometry, 1)
-  metadata_df <- data.frame(ID = rep(polygon$ID, 1),
-                            yyyy = rep(polygon$yyyy, 1),
-                            mm = rep(polygon$mm, 1),
-                            largest.dhufish.kg = rep(polygon$largest.dhufish.kg, 1),
-                            decade = as.factor(rep(polygon$decade, 1)))
-  r_points_with_metadata <- cbind(metadata_df, geometry = r_points)
-  all_r_points_with_metadata[[i]] <- r_points_with_metadata
-}
-
-single_trip_points <- do.call(rbind, all_r_points_with_metadata)
-glimpse(single_trip_points)
-plot(single_trip_points$geometry)
-
-#####add zones and bathy#####
-
-dt <- single_trip_points %>%
-  st_as_sf() %>%
-  st_join(st_as_sf(perth_zones)) %>%
-  mutate(
-    Zone = as.factor(Zone),
-    latitude = st_coordinates(geometry)[, "Y"],
-    scientific = "fish.size",
-    echo_sounders = factor(ifelse(yyyy < 1970, "pre", "post"), levels = c("pre", "post")),
-    gps = factor(ifelse(yyyy < 1990, "pre", "post"), levels = c("pre", "post"))
-  ) %>%
-  mutate(
-    bathy = extract(bathy, .)$bathy_cropped1,
-    bathy = ifelse(bathy >= 0, runif(sum(bathy >= 0), min = -10, max = -2), bathy) ##resample positive bathy values
-  ) %>% 
-  arrange(ID) %>% 
-  mutate(depth=bathy*-1,
-         yyyy=as.numeric(yyyy))
-  
-
-glimpse(dt)
-
-
-#####add factors for major rec fishing changes#####
-## add latitude, remove zones? 
-
-#use joes paper to decide on important factors
-#add factor for echo sounder - widespread approx 1969
-#GPS - from 1990
-#bag limits for dhufish decreased to 3 1974
-#braided line introduced ~1985
-#marmion angling club and basic launching facilities
-
-#add factor for boat ramp construction
 
 ##### check bathy above zero #####
 
-
-bathy_above_zero <- dt[dt$bathy >= 0, ] ### Plot points with bathy values above zero on basemap
+bathy_above_zero <- dat[dt$bathy >= 0, ] ### Plot points with bathy values above zero on basemap
 
 ggplot() +
   geom_sf(data = WA_base) +  # Basemap
@@ -119,7 +72,7 @@ ggplot() +
 
 ##### plots by depth classes#####
 
-depth_range_subset <- dt %>%
+depth_range_subset <- dat %>%
   filter(bathy <= 0 & bathy >= -10)
 
 plot(largest.dhufish.kg ~ yyyy, data=depth_range_subset)
@@ -182,11 +135,29 @@ ggplot() +
   geom_point(data = dt, aes( x = latitude, y = largest.dhufish.kg)) 
 
 ggplot() +
-  geom_point(data = dt, aes(x = yyyy, y = largest.dhufish.kg)) +
+  geom_point(data = dat, aes(x = yyyy, y = largest.dhufish.kg)) +
   facet_wrap(~Zone, scales = "free_y", nrow = 4) +  # Separate plots for each zone
   labs(x = "Year", y = "Largest Dhufish (kg)") +
   theme_minimal()
 
+ggplot() +
+  geom_point(data = dt, aes(x = yyyy, y = largest.dhufish.kg)) +
+  geom_smooth(data = dt, aes(x = yyyy, y = largest.dhufish.kg, group = Zone), method = "lm", se = FALSE) +
+  facet_wrap(~Zone, scales = "free_y", nrow = 4) +  # Separate plots for each zone
+  labs(x = "Year", y = "Largest Dhufish (kg)") +
+  theme_minimal()
+
+
+slope_intercept <- dt %>%
+  group_by(Zone) %>%
+  do({
+    lm_model <- lm(largest.dhufish.kg ~ yyyy, data = .)
+    tibble(
+      Zone = unique(.$Zone),
+      slope = coef(lm_model)[["yyyy"]],
+      intercept = coef(lm_model)[["(Intercept)"]]
+    )
+  })
 
 
 ##### plotting depth against dhu size for each zone #####
@@ -247,8 +218,14 @@ for (i in 1:length(zones_to_include)) {
 
 
 
-#####LM#####
+#####compare model from random points and centroids#####
+plot(largest.dhufish.kg~Zone*yyyy, data=dat)
+plot(largest.dhufish.kg~Zone*yyyy, data=dt)
+lm1 <- lm(largest.dhufish.kg~Zone*yyyy, data=dat) ### centroids
+summary(lm1)
 
+lm2 <- lm(largest.dhufish.kg~Zone*yyyy, data=dt) ### random
+summary(lm2)
 
 lm.test <- lm(largest.dhufish.kg ~ yyyy*bathy, data = dt)
 summary(lm.test)
