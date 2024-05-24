@@ -53,7 +53,11 @@ glimpse(cropped_trip_location)
 
 ##### join spatial data #####
 
-fishing_trips <- left_join(cropped_trip_location, dhu_records, by = c("ID") )
+fishing_trips <- left_join(cropped_trip_location, dhu_records, by = c("ID") ) %>% 
+arrange(ID)
+
+head(fishing_trips)
+
 glimpse(fishing_trips)
 
 ##### centroid from each polygon for reference model #####
@@ -88,4 +92,5 @@ dat <- centroid_df %>%
          yyyy=as.numeric(yyyy)-1904)
 
 glimpse(dat)
+plot(dat)
 write.csv(dat, "data/population_data_centroids.csv")

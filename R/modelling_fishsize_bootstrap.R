@@ -59,7 +59,7 @@ fishing_trips
 glimpse(fishing_trips)
 str(fishing_trips)
 
-# Generate random points within each polygon and link with metadata
+
 
 
 
@@ -111,6 +111,8 @@ for (i in 1:n_repeats) {
 coefficients_df <- do.call(rbind, all_lm_coefs)
 write.csv (coefficients_df, "outputs/bootstap_coeffs.csv")
 
+
+coefficients_df <- read.csv("outputs/bootstap_coeffs.csv") #### this seems to generate a different 'intercept' column heading from the initial output 
 head(coefficients_df)
 summary(lm_model)
 
@@ -135,17 +137,28 @@ print(coef_table)
 
 ##### plot lines and confidence intervals for each zone #####
 
-plot(largest.dhufish.kg~yyyy, data = dt, xlim = c(0, 111), ylim = c(0, 20), pch = 20, xlab = "Year", ylab = "Dhufish Size (kg)", main = "compare regressions", xaxt = "n")
-axis(1, at = seq(0, 110, by = 10), labels = seq(1900, 2010, by = 10), las = 1, cex.axis = 0.8)
+plot(largest.dhufish.kg~yyyy, data = dat, xlim = c(0, 111), ylim = c(0, 20), pch = 20, 
+    xlab = "Year", ylab = "Dhufish Size (kg)", main = "compare regressions", xaxt = "n")
+    axis(1, at = seq(0, 110, by = 10), labels = seq(1900, 2010, by = 10), las = 1, cex.axis = 0.8)
 
 # Set up plot with custom axis limits
-plot(largest.dhufish.kg ~ yyyy, data = dt, xlim = c(0, 111), ylim = c(0, 20), pch = 20, xlab = "Year", ylab = "Dhufish Size (kg)", main = "compare regressions", xaxt = "n", yaxt = "n", bty = "n", xaxs = "i", yaxs = "i")
-axis(1, at = seq(0, 110, by = 10), labels = seq(1900, 2010, by = 10), las = 1, cex.axis = 0.8, lwd = 1)
-axis(2, las = 1, cex.axis = 0.8, lwd = 1)
+plot(largest.dhufish.kg ~ yyyy, data = dat, xlim = c(0, 111), ylim = c(0, 20), pch = 20, 
+    xlab = "Year", ylab = "Dhufish Size (kg)", 
+    main = "compare regressions", xaxt = "n", yaxt = "n", bty = "n", xaxs = "i", yaxs = "i")
+    axis(1, at = seq(0, 110, by = 10), labels = seq(1900, 2010, by = 10), las = 1, cex.axis = 0.8, lwd = 1)
+    axis(2, las = 1, cex.axis = 0.8, lwd = 1)
 
+
+###rename intercept column to match code below - saving and re-reading seemed to change the column name 
+coefficients_df$"(Intercept)" <- coefficients_df$X.Intercept.
 
 ###openPDF
-pdf(file="outputs/bootsrap_plots_cols.pdf", width= 10, height = 6 )
+
+
+
+pdf(file="outputs/bootsrap_plots_cols_2.pdf", width= 11.5, height = 11.5 )
+par(mfrow = c(3, 2))
+
 
 
 ###near rottnest
@@ -155,8 +168,9 @@ subset_data <- subset(dat, Zone == "near_rottnest")
 lm_pop <- lm(largest.dhufish.kg ~ yyyy, data = subset_data)
 
 
-plot(largest.dhufish.kg~yyyy, data = subset_data, xlim = c(0, 111), ylim = c(0, 25), pch = 20, xlab = "Year", ylab = "Dhufish Size (kg)", main = "Near Rottnest", xaxt = "n")
-axis(1, at = seq(0, 110, by = 10), labels = seq(1900, 2010, by = 10), las = 1, cex.axis = 0.8)
+plot(largest.dhufish.kg~yyyy, data = subset_data, xlim = c(0, 111), ylim = c(0, 25), pch = 20, cex=0.5, 
+    xlab = "Year", ylab = "Dhufish Size (kg)", main = "Near Rottnest", xaxt = "n")
+    axis(1, at = seq(0, 110, by = 10), labels = seq(1900, 2010, by = 10), las = 1, cex.axis = 0.8)
 
 intercepts <- coefficients_df[, "(Intercept)"]
 slopes <- coefficients_df[, "yyyy"]
@@ -194,8 +208,8 @@ upper <- function(column) {
 lowerresult <- as.vector(sapply(predictions_df, lower))
 upperresult <- as.vector(sapply(predictions_df, upper))
 
-lines(upperresult, lty=3)
-lines(lowerresult, lty=3)
+lines(upperresult, lty=2)
+lines(lowerresult, lty=2)
 
 
 #### nearshore north
@@ -205,171 +219,12 @@ subset_data <- subset(dat, Zone == "nearshore_north")
 lm_pop <- lm(largest.dhufish.kg ~ yyyy, data = subset_data)
 
 
-plot(largest.dhufish.kg~yyyy, data = subset_data, xlim = c(0, 111), ylim = c(0, 25), pch = 20, xlab = "Year", ylab = "Dhufish Size (kg)", main = "Nearshore north", xaxt = "n")
-axis(1, at = seq(0, 110, by = 10), labels = seq(1900, 2010, by = 10), las = 1, cex.axis = 0.8)
+plot(largest.dhufish.kg~yyyy, data = subset_data, xlim = c(0, 111), ylim = c(0, 25), pch = 20, cex=0.5, 
+    xlab = "Year", ylab = "Dhufish Size (kg)", main = "Nearshore north", xaxt = "n")
+    axis(1, at = seq(0, 110, by = 10), labels = seq(1900, 2010, by = 10), las = 1, cex.axis = 0.8)
 
 intercepts <- (coefficients_df[, "(Intercept)"])+(coefficients_df[, "Zonenearshore_north"])
-slopes <- (coefficients_df[, "yyyy"]) + (coefficients_df[, "yyyy:Zonenearshore_north"])
-
-
-for (i in 1:length(intercepts)) {
-  x <- c(40, 107)
-  y <- intercepts[i] + slopes[i] * x
-  lines(x, y, lwd = 0.02, col = rgb(1, 0, 0, 0.02)) 
-}
-
-abline(lm_pop,lty=2,col = rgb(0.2, 0, 0.8, 1) )  ##pop lm
-abline(mean(intercepts),mean(slopes), lwd=1, lty=2, col = rgb(0, 0.8, 0.2, 1) ) ##mean bootsrap 
-
-##confidence intervals
-
-predictions_df <- data.frame(matrix(NA, nrow = nrow(coefficients_df), ncol = 110))
-
-for (i in 1:nrow(coefficients_df)) {
-  for (year in 1:110) {
-    prediction <- (coefficients_df[i, "(Intercept)"])+(coefficients_df[i, "Zonenearshore_north"]) + ((coefficients_df[i, "yyyy"]+coefficients_df[i, "yyyy:Zonenearshore_north"]) * year)
-    predictions_df[i, year] <- prediction
-  }
-}
-
-head(predictions_df)
-
-lower <- function(column) {
-  quantile(column, probs = 0.025)
-}
-
-upper <- function(column) {
-  quantile(column, probs = 0.975)
-}
-
-# Apply the function to each column of the data frame
-lowerresult <- as.vector(sapply(predictions_df, lower))
-upperresult <- as.vector(sapply(predictions_df, upper))
-
-lines(upperresult, lty=2)
-lines(lowerresult, lty=2)
-
-
-####nearshore south
-
-subset_data <- subset(dat, Zone == "nearshore_south")
-lm_pop <- lm(largest.dhufish.kg ~ yyyy, data = subset_data)
-
-
-##base plot
-plot(largest.dhufish.kg~yyyy, data = subset_data, xlim = c(0, 111), ylim = c(0, 25), pch = 20, xlab = "Year", ylab = "Dhufish Size (kg)", main = "Nearshore south", xaxt = "n")
-axis(1, at = seq(0, 110, by = 10), labels = seq(1900, 2010, by = 10), las = 1, cex.axis = 0.8)
-
-##lm lines
-intercepts <- (coefficients_df[, "(Intercept)"])+(coefficients_df[, "Zonenearshore_south"])
-slopes <- (coefficients_df[, "yyyy"]) + (coefficients_df[, "yyyy:Zonenearshore_south"])
-
-
-for (i in 1:length(intercepts)) {
-  x <- c(0, 107)
-  y <- intercepts[i] + slopes[i] * x
-  lines(x, y, lwd = 0.02, col = rgb(1, 0, 0, 0.02)) 
-}
-
-abline(lm_pop,lty=2,col = rgb(0.2, 0, 0.8, 1) )  ##pop lm
-abline(mean(intercepts),mean(slopes), lwd=1, lty=2, col = rgb(0, 0.8, 0.2, 1) ) ##mean bootsrap 
-
-##confidence intervals
-
-predictions_df <- data.frame(matrix(NA, nrow = nrow(coefficients_df), ncol = 110))
-
-for (i in 1:nrow(coefficients_df)) {
-  for (year in 1:110) {
-    prediction <- (coefficients_df[i, "(Intercept)"])+(coefficients_df[i, "Zonenearshore_south"]) + ((coefficients_df[i, "yyyy"]+coefficients_df[i, "yyyy:Zonenearshore_south"]) * year)
-    predictions_df[i, year] <- prediction
-  }
-}
-
-head(predictions_df)
-
-lower <- function(column) {
-  quantile(column, probs = 0.025)
-}
-
-upper <- function(column) {
-  quantile(column, probs = 0.975)
-}
-
-# Apply the function to each column of the data frame
-lowerresult <- as.vector(sapply(predictions_df, lower))
-upperresult <- as.vector(sapply(predictions_df, upper))
-
-lines(upperresult, lty=2)
-lines(lowerresult, lty=2)
-
-
-####offshore north
-
-##base plot
-subset_data <- subset(dat, Zone == "offshore_north")
-lm_pop <- lm(largest.dhufish.kg ~ yyyy, data = subset_data)
-
-
-plot(largest.dhufish.kg~yyyy, data = subset_data, xlim = c(0, 111), ylim = c(0, 25), pch = 20, xlab = "Year", ylab = "Dhufish Size (kg)", main = "Offshore north", xaxt = "n")
-axis(1, at = seq(0, 110, by = 10), labels = seq(1900, 2010, by = 10), las = 1, cex.axis = 0.8)
-
-##lm lines
-
-intercepts <- (coefficients_df[, "(Intercept)"])+(coefficients_df[, "Zoneoffshore_north"])
-slopes <- (coefficients_df[, "yyyy"]) + (coefficients_df[, "yyyy:Zoneoffshore_north"])
-
-
-for (i in 1:length(intercepts)) {
-  x <- c(0, 107)
-  y <- intercepts[i] + slopes[i] * x
-  lines(x, y, lwd = 0.02, col = rgb(1, 0, 0, 0.02)) 
-}
-
-abline(lm_pop,lty=2,col = rgb(0.2, 0, 0.8, 1) )  ##pop lm
-abline(mean(intercepts),mean(slopes), lwd=1, lty=2, col = rgb(0, 0.8, 0.2, 1) ) ##mean bootsrap 
-
-##confidence intervals
-
-predictions_df <- data.frame(matrix(NA, nrow = nrow(coefficients_df), ncol = 110))
-
-for (i in 1:nrow(coefficients_df)) {
-  for (year in 1:110) {
-    prediction <- (coefficients_df[i, "(Intercept)"])+(coefficients_df[i, "Zoneoffshore_north"]) + ((coefficients_df[i, "yyyy"]+coefficients_df[i, "yyyy:Zoneoffshore_north"]) * year)
-    predictions_df[i, year] <- prediction
-  }
-}
-
-
-lower <- function(column) {
-  quantile(column, probs = 0.025)
-}
-
-upper <- function(column) {
-  quantile(column, probs = 0.975)
-}
-
-# Apply the function to each column of the data frame
-lowerresult <- as.vector(sapply(predictions_df, lower))
-upperresult <- as.vector(sapply(predictions_df, upper))
-
-lines(upperresult, lty=2)
-lines(lowerresult, lty=2)
-
-
-
-####offshore south  
-
-##base plot
-subset_data <- subset(dat, Zone == "offshore_south")
-lm_pop <- lm(largest.dhufish.kg ~ yyyy, data = subset_data)
-
-
-plot(largest.dhufish.kg~yyyy, data = subset_data, xlim = c(0, 111), ylim = c(0, 25), pch = 20, xlab = "Year", ylab = "Dhufish Size (kg)", main = "Offshore south", xaxt = "n")
-axis(1, at = seq(0, 110, by = 10), labels = seq(1900, 2010, by = 10), las = 1, cex.axis = 0.8)
-
-##lines for each model
-intercepts <- (coefficients_df[, "(Intercept)"])+(coefficients_df[, "Zoneoffshore_south"])
-slopes <- (coefficients_df[, "yyyy"]) + (coefficients_df[, "yyyy:Zoneoffshore_south"])
+slopes <- (coefficients_df[, "yyyy"]) + (coefficients_df[, "yyyy.Zonenearshore_north"])
 
 
 for (i in 1:length(intercepts)) {
@@ -387,7 +242,124 @@ predictions_df <- data.frame(matrix(NA, nrow = nrow(coefficients_df), ncol = 110
 
 for (i in 1:nrow(coefficients_df)) {
   for (year in 1:110) {
-    prediction <- (coefficients_df[i, "(Intercept)"])+(coefficients_df[i, "Zoneoffshore_south"]) + ((coefficients_df[i, "yyyy"]+coefficients_df[i, "yyyy:Zoneoffshore_south"]) * year)
+    prediction <- (coefficients_df[i, "(Intercept)"])+(coefficients_df[i, "Zonenearshore_north"]) + 
+    ((coefficients_df[i, "yyyy"]+coefficients_df[i, "yyyy.Zonenearshore_north"]) * year)
+    predictions_df[i, year] <- prediction
+  }
+}
+
+head(predictions_df)
+
+lower <- function(column) {
+  quantile(column, probs = 0.025)
+}
+
+upper <- function(column) {
+  quantile(column, probs = 0.975)
+}
+
+# Apply the function to each column of the data frame
+lowerresult <- as.vector(sapply(predictions_df, lower))
+upperresult <- as.vector(sapply(predictions_df, upper))
+
+x_values <- 50:110
+y_lower <- lowerresult[50:110]
+y_upper <- upperresult[50:110]
+
+lines(x_values, y_lower, lty = 2)
+lines(x_values, y_upper, lty = 2)
+
+
+####nearshore south
+
+subset_data <- subset(dat, Zone == "nearshore_south")
+lm_pop <- lm(largest.dhufish.kg ~ yyyy, data = subset_data)
+
+
+##base plot
+plot(largest.dhufish.kg~yyyy, data = subset_data, xlim = c(0, 111), ylim = c(0, 25), pch = 20, cex=0.5, 
+  xlab = "Year", ylab = "Dhufish Size (kg)", main = "Nearshore south", xaxt = "n")
+  axis(1, at = seq(0, 110, by = 10), labels = seq(1900, 2010, by = 10), las = 1, cex.axis = 0.8)
+
+##lm lines
+intercepts <- (coefficients_df[, "(Intercept)"])+(coefficients_df[, "Zonenearshore_south"])
+slopes <- (coefficients_df[, "yyyy"]) + (coefficients_df[, "yyyy.Zonenearshore_south"])
+
+
+for (i in 1:length(intercepts)) {
+  x <- c(0, 107)
+  y <- intercepts[i] + slopes[i] * x
+  lines(x, y, lwd = 0.02, col = rgb(1, 0, 0, 0.02)) 
+}
+
+abline(lm_pop,lty=2,col = rgb(0.2, 0, 0.8, 1) )  ##pop lm
+abline(mean(intercepts),mean(slopes), lwd=1, lty=2, col = rgb(0, 0.8, 0.2, 1) ) ##mean bootsrap 
+
+##confidence intervals
+
+predictions_df <- data.frame(matrix(NA, nrow = nrow(coefficients_df), ncol = 110))
+
+for (i in 1:nrow(coefficients_df)) {
+  for (year in 1:110) {
+    prediction <- (coefficients_df[i, "(Intercept)"])+(coefficients_df[i, "Zonenearshore_south"]) + 
+    ((coefficients_df[i, "yyyy"]+coefficients_df[i, "yyyy.Zonenearshore_south"]) * year)
+    predictions_df[i, year] <- prediction
+  }
+}
+
+head(predictions_df)
+
+lower <- function(column) {
+  quantile(column, probs = 0.025)
+}
+
+upper <- function(column) {
+  quantile(column, probs = 0.975)
+}
+
+# Apply the function to each column of the data frame
+lowerresult <- as.vector(sapply(predictions_df, lower))
+upperresult <- as.vector(sapply(predictions_df, upper))
+
+
+lines(upperresult, lty=2)
+lines(lowerresult, lty=2)
+
+
+####offshore north
+
+##base plot
+subset_data <- subset(dat, Zone == "offshore_north")
+lm_pop <- lm(largest.dhufish.kg ~ yyyy, data = subset_data)
+
+
+plot(largest.dhufish.kg~yyyy, data = subset_data, xlim = c(0, 111), ylim = c(0, 25), pch = 20, cex=0.5,
+    xlab = "Year", ylab = "Dhufish Size (kg)", main = "Offshore north", xaxt = "n")
+    axis(1, at = seq(0, 110, by = 10), labels = seq(1900, 2010, by = 10), las = 1, cex.axis = 0.8)
+
+##lm lines
+
+intercepts <- (coefficients_df[, "(Intercept)"])+(coefficients_df[, "Zoneoffshore_north"])
+slopes <- (coefficients_df[, "yyyy"]) + (coefficients_df[, "yyyy.Zoneoffshore_north"])
+
+
+for (i in 1:length(intercepts)) {
+  x <- c(50, 107)
+  y <- intercepts[i] + slopes[i] * x
+  lines(x, y, lwd = 0.02, col = rgb(1, 0, 0, 0.02)) 
+}
+
+abline(lm_pop,lty=2,col = rgb(0.2, 0, 0.8, 1) )  ##pop lm
+abline(mean(intercepts),mean(slopes), lwd=1, lty=2, col = rgb(0, 0.8, 0.2, 1) ) ##mean bootsrap 
+
+##confidence intervals
+
+predictions_df <- data.frame(matrix(NA, nrow = nrow(coefficients_df), ncol = 110))
+
+for (i in 1:nrow(coefficients_df)) {
+  for (year in 1:110) {
+    prediction <- (coefficients_df[i, "(Intercept)"])+(coefficients_df[i, "Zoneoffshore_north"]) + 
+    ((coefficients_df[i, "yyyy"]+coefficients_df[i, "yyyy.Zoneoffshore_north"]) * year)
     predictions_df[i, year] <- prediction
   }
 }
@@ -405,8 +377,70 @@ upper <- function(column) {
 lowerresult <- as.vector(sapply(predictions_df, lower))
 upperresult <- as.vector(sapply(predictions_df, upper))
 
-lines(upperresult, lty=2)
-lines(lowerresult, lty=2)
+x_values <- 50:110
+y_lower <- lowerresult[50:110]
+y_upper <- upperresult[50:110]
+
+lines(x_values, y_lower, lty = 2)
+lines(x_values, y_upper, lty = 2)
+
+
+####offshore south  
+
+##base plot
+subset_data <- subset(dat, Zone == "offshore_south")
+lm_pop <- lm(largest.dhufish.kg ~ yyyy, data = subset_data)
+
+
+plot(largest.dhufish.kg~yyyy, data = subset_data, xlim = c(0, 111), ylim = c(0, 25), pch = 20, cex=0.5,
+    xlab = "Year", ylab = "Dhufish Size (kg)", main = "Offshore south", xaxt = "n")
+    axis(1, at = seq(0, 110, by = 10), labels = seq(1900, 2010, by = 10), las = 1, cex.axis = 0.8)
+
+##lines for each model
+intercepts <- (coefficients_df[, "(Intercept)"])+(coefficients_df[, "Zoneoffshore_south"])
+slopes <- (coefficients_df[, "yyyy"]) + (coefficients_df[, "yyyy.Zoneoffshore_south"])
+
+
+for (i in 1:length(intercepts)) {
+  x <- c(50, 107)
+  y <- intercepts[i] + slopes[i] * x
+  lines(x, y, lwd = 0.02, col = rgb(1, 0, 0, 0.02)) 
+}
+
+abline(lm_pop,lty=2,col = rgb(0.2, 0, 0.8, 1) )  ##pop lm
+abline(mean(intercepts),mean(slopes), lwd=1, lty=2, col = rgb(0, 0.8, 0.2, 1) ) ##mean bootsrap 
+
+##confidence intervals
+
+predictions_df <- data.frame(matrix(NA, nrow = nrow(coefficients_df), ncol = 110))
+
+for (i in 1:nrow(coefficients_df)) {
+  for (year in 1:110) {
+    prediction <- (coefficients_df[i, "(Intercept)"])+(coefficients_df[i, "Zoneoffshore_south"]) + 
+    ((coefficients_df[i, "yyyy"]+coefficients_df[i, "yyyy.Zoneoffshore_south"]) * year)
+    predictions_df[i, year] <- prediction
+  }
+}
+
+
+lower <- function(column) {
+  quantile(column, probs = 0.025)
+}
+
+upper <- function(column) {
+  quantile(column, probs = 0.975)
+}
+
+# Apply the function to each column of the data frame
+lowerresult <- as.vector(sapply(predictions_df, lower))
+upperresult <- as.vector(sapply(predictions_df, upper))
+
+x_values <- 50:110
+y_lower <- lowerresult[50:110]
+y_upper <- upperresult[50:110]
+
+lines(x_values, y_lower, lty = 2)
+lines(x_values, y_upper, lty = 2)
 
 
 ### savePDF
