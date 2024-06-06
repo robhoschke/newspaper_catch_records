@@ -135,20 +135,47 @@ coef_table <- data.frame(
 print(coef_table)
 
 
-##### plot lines and confidence intervals for each zone #####
+##### all zones combined #####
 
-plot(largest.dhufish.kg~yyyy, data = dat, xlim = c(0, 111), ylim = c(0, 20), pch = 20, 
-    xlab = "Year", ylab = "Dhufish Size (kg)", main = "compare regressions", xaxt = "n")
-    axis(1, at = seq(0, 110, by = 10), labels = seq(1900, 2010, by = 10), las = 1, cex.axis = 0.8)
+    
+    # Fit the linear model
+    lm_pop <- lm(largest.dhufish.kg ~ yyyy, data = dat)
+    
+    # Plot the original data with appropriate labels and axes
+plot(largest.dhufish.kg ~ yyyy, data = dat, xlim = c(0, 111), ylim = c(0, 30), pch = 20, 
+     xlab = "Year", ylab = "Dhufish Size (kg)", xaxt = "n", yaxt = "n", bty = "n", xaxs = "i", yaxs = "i")
+axis(1, at = seq(0, 110, by = 10), labels = seq(1900, 2010, by = 10), las = 1, cex.axis = 0.8, lwd = 1)
+axis(2, las = 1, cex.axis = 0.8, lwd = 1)
+    
+    
+x_pred <- seq(0, 110, length.out = 11)                             ##pop lm from yyyy 50
+y_pred <- predict(lm_pop, newdata = data.frame(yyyy = x_pred))
+lines(x_pred, y_pred, col = "blue", lwd = 1, lty=1)
+    
+    # Generate predictions with confidence intervals
+    predictions <- predict(lm_pop, interval = "confidence")
+    
+    # Overlay confidence bounds on the plot
+    lines(dat$yyyy, predictions[, "lwr"], lwd = 1, lty = 2)
+    lines(dat$yyyy, predictions[, "upr"], lwd = 1, lty = 2)
+    
+    # Get summary of the linear model
+    summary_lm <- summary(lm_pop)
+    
+    # Extract R-squared value and p-value
+    r_squared <- summary_lm$r.squared
+    p_value <- summary_lm$coefficients[2, 4]  # p-value for the slope coefficient
+    
+    # Add R-squared and p-value to the plot
+    text(12, 29, paste("R-squared =", round(r_squared, 3)))
+    text(12, 27, paste("p-value =", formatC(p_value, digits = 3)))
+    
+    
 
-# Set up plot with custom axis limits
-plot(largest.dhufish.kg ~ yyyy, data = dat, xlim = c(0, 111), ylim = c(0, 20), pch = 20, 
-    xlab = "Year", ylab = "Dhufish Size (kg)", 
-    main = "compare regressions", xaxt = "n", yaxt = "n", bty = "n", xaxs = "i", yaxs = "i")
-    axis(1, at = seq(0, 110, by = 10), labels = seq(1900, 2010, by = 10), las = 1, cex.axis = 0.8, lwd = 1)
-    axis(2, las = 1, cex.axis = 0.8, lwd = 1)
 
 
+##### plot lines and confidence intervals for each zone #####   
+    
 ###rename intercept column to match code below - saving and re-reading seemed to change the column name 
 coefficients_df$"(Intercept)" <- coefficients_df$X.Intercept.
 
@@ -156,7 +183,7 @@ coefficients_df$"(Intercept)" <- coefficients_df$X.Intercept.
 
 
 
-pdf(file="outputs/bootsrap_plots_cols_2.pdf", width= 11.5, height = 11.5 )
+pdf(file="outputs/bootsrap_plots_intervals_only.pdf", width= 11.5, height = 11.5 )
 par(mfrow = c(3, 2))
 
 
@@ -176,14 +203,21 @@ intercepts <- coefficients_df[, "(Intercept)"]
 slopes <- coefficients_df[, "yyyy"]
 
 
-for (i in 1:length(intercepts)) {
-  x <- c(0, 107)
-  y <- intercepts[i] + slopes[i] * x
-  lines(x, y, lwd = 0.02, col = rgb(1, 0, 0, 0.02))
-}
+# for (i in 1:length(intercepts)) {
+#   x <- c(0, 107)
+#   y <- intercepts[i] + slopes[i] * x
+#   lines(x, y, lwd = 0.02, col = rgb(1, 0, 0, 0.02))
+# }
 
-abline(lm_pop,lty=2,col = rgb(0.2, 0, 0.8, 1) )  ##pop lm
-abline(mean(intercepts),mean(slopes), lwd=1, lty=2, col = rgb(0, 0.8, 0.2, 1) ) ##mean bootsrap 
+
+##pop and lm mean lines
+
+x_pred <- seq(0, 110, length.out = 11)                             ##pop lm from yyyy 50
+y_pred <- predict(lm_pop, newdata = data.frame(yyyy = x_pred))
+lines(x_pred, y_pred, col = "blue", lwd = 1, lty=1)
+
+y_pred <- y_pred <- (mean(intercepts)) + (mean(slopes) * x_pred)   ##mean bootstrap
+lines(x_pred, y_pred, col = "green", lwd = 1, lty=1)
 
 ##confidence intervals
 predictions_df <- data.frame(matrix(NA, nrow = nrow(coefficients_df), ncol = 110))
@@ -223,18 +257,26 @@ plot(largest.dhufish.kg~yyyy, data = subset_data, xlim = c(0, 111), ylim = c(0, 
     xlab = "Year", ylab = "Dhufish Size (kg)", main = "Nearshore north", xaxt = "n")
     axis(1, at = seq(0, 110, by = 10), labels = seq(1900, 2010, by = 10), las = 1, cex.axis = 0.8)
 
+##plot all lm's    
+    
 intercepts <- (coefficients_df[, "(Intercept)"])+(coefficients_df[, "Zonenearshore_north"])
 slopes <- (coefficients_df[, "yyyy"]) + (coefficients_df[, "yyyy.Zonenearshore_north"])
 
 
-for (i in 1:length(intercepts)) {
-  x <- c(50, 107)
-  y <- intercepts[i] + slopes[i] * x
-  lines(x, y, lwd = 0.02, col = rgb(1, 0, 0, 0.02)) 
-}
+# for (i in 1:length(intercepts)) {
+#   x <- c(50, 107)
+#   y <- intercepts[i] + slopes[i] * x
+#   lines(x, y, lwd = 0.02, col = rgb(1, 0, 0, 0.02)) 
+# }
 
-abline(lm_pop,lty=2,col = rgb(0.2, 0, 0.8, 1) )  ##pop lm
-abline(mean(intercepts),mean(slopes), lwd=1, lty=2, col = rgb(0, 0.8, 0.2, 1) ) ##mean bootsrap 
+##plot pop and bootsrap means
+
+x_pred <- seq(50, 110, length.out = 11)                             ##pop lm from yyyy 50
+y_pred <- predict(lm_pop, newdata = data.frame(yyyy = x_pred))
+lines(x_pred, y_pred, col = "blue", lwd = 1, lty=1)
+
+y_pred <- y_pred <- (mean(intercepts)) + (mean(slopes) * x_pred)   ##mean bootstrap
+lines(x_pred, y_pred, col = "green", lwd = 1, lty=1)
 
 ##confidence intervals
 
@@ -247,8 +289,6 @@ for (i in 1:nrow(coefficients_df)) {
     predictions_df[i, year] <- prediction
   }
 }
-
-head(predictions_df)
 
 lower <- function(column) {
   quantile(column, probs = 0.025)
@@ -286,14 +326,18 @@ intercepts <- (coefficients_df[, "(Intercept)"])+(coefficients_df[, "Zonenearsho
 slopes <- (coefficients_df[, "yyyy"]) + (coefficients_df[, "yyyy.Zonenearshore_south"])
 
 
-for (i in 1:length(intercepts)) {
-  x <- c(0, 107)
-  y <- intercepts[i] + slopes[i] * x
-  lines(x, y, lwd = 0.02, col = rgb(1, 0, 0, 0.02)) 
-}
+# for (i in 1:length(intercepts)) {
+#   x <- c(0, 107)
+#   y <- intercepts[i] + slopes[i] * x
+#   lines(x, y, lwd = 0.02, col = rgb(1, 0, 0, 0.02)) 
+# }
 
-abline(lm_pop,lty=2,col = rgb(0.2, 0, 0.8, 1) )  ##pop lm
-abline(mean(intercepts),mean(slopes), lwd=1, lty=2, col = rgb(0, 0.8, 0.2, 1) ) ##mean bootsrap 
+x_pred <- seq(0, 110, length.out = 11)                             ##pop lm from yyyy 50
+y_pred <- predict(lm_pop, newdata = data.frame(yyyy = x_pred))
+lines(x_pred, y_pred, col = "blue", lwd = 1, lty=1)
+
+y_pred <- y_pred <- (mean(intercepts)) + (mean(slopes) * x_pred)   ##mean bootstrap
+lines(x_pred, y_pred, col = "green", lwd = 1, lty=1)
 
 ##confidence intervals
 
@@ -343,14 +387,18 @@ intercepts <- (coefficients_df[, "(Intercept)"])+(coefficients_df[, "Zoneoffshor
 slopes <- (coefficients_df[, "yyyy"]) + (coefficients_df[, "yyyy.Zoneoffshore_north"])
 
 
-for (i in 1:length(intercepts)) {
-  x <- c(50, 107)
-  y <- intercepts[i] + slopes[i] * x
-  lines(x, y, lwd = 0.02, col = rgb(1, 0, 0, 0.02)) 
-}
+# for (i in 1:length(intercepts)) {
+#   x <- c(50, 107)
+#   y <- intercepts[i] + slopes[i] * x
+#   lines(x, y, lwd = 0.02, col = rgb(1, 0, 0, 0.02)) 
+# }
 
-abline(lm_pop,lty=2,col = rgb(0.2, 0, 0.8, 1) )  ##pop lm
-abline(mean(intercepts),mean(slopes), lwd=1, lty=2, col = rgb(0, 0.8, 0.2, 1) ) ##mean bootsrap 
+x_pred <- seq(50, 110, length.out = 11)                             ##pop lm from yyyy 50
+y_pred <- predict(lm_pop, newdata = data.frame(yyyy = x_pred))
+lines(x_pred, y_pred, col = "blue", lwd = 1, lty=1)
+
+y_pred <- y_pred <- (mean(intercepts)) + (mean(slopes) * x_pred)   ##mean bootstrap
+lines(x_pred, y_pred, col = "green", lwd = 1, lty=1)
 
 ##confidence intervals
 
@@ -401,14 +449,18 @@ intercepts <- (coefficients_df[, "(Intercept)"])+(coefficients_df[, "Zoneoffshor
 slopes <- (coefficients_df[, "yyyy"]) + (coefficients_df[, "yyyy.Zoneoffshore_south"])
 
 
-for (i in 1:length(intercepts)) {
-  x <- c(50, 107)
-  y <- intercepts[i] + slopes[i] * x
-  lines(x, y, lwd = 0.02, col = rgb(1, 0, 0, 0.02)) 
-}
+# for (i in 1:length(intercepts)) {
+#   x <- c(50, 107)
+#   y <- intercepts[i] + slopes[i] * x
+#   lines(x, y, lwd = 0.02, col = rgb(1, 0, 0, 0.02)) 
+# }
 
-abline(lm_pop,lty=2,col = rgb(0.2, 0, 0.8, 1) )  ##pop lm
-abline(mean(intercepts),mean(slopes), lwd=1, lty=2, col = rgb(0, 0.8, 0.2, 1) ) ##mean bootsrap 
+x_pred <- seq(50, 110, length.out = 11)                             ##pop lm from yyyy 50
+y_pred <- predict(lm_pop, newdata = data.frame(yyyy = x_pred))
+lines(x_pred, y_pred, col = "blue", lwd = 1, lty=1)
+
+y_pred <- y_pred <- (mean(intercepts)) + (mean(slopes) * x_pred)   ##mean bootstrap
+lines(x_pred, y_pred, col = "green", lwd = 1, lty=1)
 
 ##confidence intervals
 
@@ -441,6 +493,17 @@ y_upper <- upperresult[50:110]
 
 lines(x_values, y_lower, lty = 2)
 lines(x_values, y_upper, lty = 2)
+
+
+
+###legend and image for plots
+
+plot(1:10, rnorm(10) * 1:10)
+legend("bottomleft", legend = c("population mean", "entry2"), bty = "n",
+       lwd = 2, cex = 1.2, col = c("black", "blue", "red"), lty = c(1, 1, NA), pch = c(NA, NA, 8))
+
+
+
 
 
 ### savePDF

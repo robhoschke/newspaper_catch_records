@@ -158,19 +158,23 @@ bathy_df_coarse <- as.data.frame(bathy_coarse, xy = TRUE)
 
 names(bathy_df_coarse) <- c("x", "y", "z")
 
-###for contours
 
     contour_levels <- c(-200, -100, -50, -30, -20, -10)
     
-###add periods
-    
-    breaks <- c(1900, 1930, 1950, 1970, 1990, 2008, 2011)
-    df$period <- cut(df$yyyy, breaks = breaks, labels = c("1900-1929", "1930-1949", "1950-1969", "1970-1989", "1990-2008", "2009-2011"))
-    
+    breaks <- c(1900, 1931, 1950, 1970, 1990, 2008, 2011)
+    df$period <- cut(df$yyyy, breaks = breaks, labels = c("1900-1929 (n=65)", "1930-1949 (n=2)", "1950-1969 (n=364)", "1970-1989 (n=140)", "1990-2008 (n=203)", "2009-2011 (n=46)"))
+
     periods_to_include <- unique(c(df$period))
     
-###generate plot
+##calculate n for each period##
+    row_counts <- df %>%
+      group_by(period) %>%
+      summarize(count = n())
     
+##open pdf to write to
+    pdf("my_plots3.pdf", width = 10, height = 10) 
+    
+##generate plot
     plots_list6 <- list()
     
     for (d in periods_to_include) {
@@ -189,17 +193,17 @@ names(bathy_df_coarse) <- c("x", "y", "z")
         #                   colour = 'white',
         #                   label.placer = label_placer_n(1)) +
         geom_sf(data = WA_base, inherit.aes = FALSE) +
-        labs(title = paste(d), x = "Longitude", y = "Latitude", size = 1.5) +
+        labs(title = paste(d), x = "Longitude", y = "Latitude") +
         paletteer::scale_fill_paletteer_c("viridis::plasma") +
-        annotate(geom = "text", x = c(115.77, 115.85, 115.85, 115.88, 115.87, 115.78),           ###place names      
+        annotate(geom = "text", x = c(115.77, 115.85, 115.85, 115.88, 115.87, 115.78),           ###place names fewer      
                  y = c(-31.5, -31.8, -31.9, -32.06, -32.29, -32.6), 
-                 label = c("Two Rocks", "Hillarys", "Perth", "Fremantle", "Rockingham", "Mandurah"), size = 1.5) +
-        annotate(geom = "text", x = c(114.99, 115.04, 115.2, 115.48, 115.5, 115.52),           ###contour labels     
+                 label = c("Two Rocks", "Hillarys", "Perth", "Fremantle", "Rockingham", "Mandurah"), size = 2.5) +
+        annotate(geom = "text", x = c(114.99, 115.11, 115.2, 115.45, 115.55, 115.6),           ###contour labels     
                  y = c(-31.55, -31.55, -31.55, -31.55,-31.55,-31.55), 
-                 label = c("-200", "-100", "-50", "-30", "-20", "-10"), size = 1.0, colour= 'white') +
+                 label = c("-200", "-100", "-50", "-30", "-20", "-10"), size = 1.8, colour= 'white') +
         coord_sf(xlim = c(114.9851, 116.0),
                  ylim = c(-32.7966, -31.30936)) +
-        theme_minimal(base_size = 4) +
+        theme_minimal(base_size = 7) +
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
               panel.background = element_blank())
       
@@ -208,8 +212,10 @@ names(bathy_df_coarse) <- c("x", "y", "z")
     
     plot4 <- lapply(plots_list6, ggplotGrob)
     grid.arrange(grobs = plot4, ncol = 3, nrow = 2)
+  
     
-    
+dev.off()
+
 ####another method####
 glimpse(df)
   d <- ggplot(df, (aes(x = st_coordinates(geometry)[, 1], y = st_coordinates(geometry)[, 2])))  
