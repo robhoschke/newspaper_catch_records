@@ -8,7 +8,7 @@
 
 source("R/data_filtering.R")
 
-##### random points for each polygon#####             ####should I generate 10 random points or a single point for the heatmap??
+##### random points for each polygon#####             
 all_random_points_with_metadata <- list()
 
 for (i in 1:nrow(fishing_trips)) {
@@ -25,7 +25,7 @@ for (i in 1:nrow(fishing_trips)) {
 
 trip_points <- do.call(rbind, all_random_points_with_metadata)
 glimpse(trip_points)
-
+plot(st_as_sf(trip_points))
 #####add zones and bathy#####
 
 df <- trip_points %>%
@@ -91,23 +91,42 @@ ggplot(df, aes(x = st_coordinates(geometry)[, 1], y = st_coordinates(geometry)[,
 
 
 ##### heat map by decade #####
+##sample size##
+a <- list()
 
+for (d in decades_to_include) {
+  subset_data <- subset(fishing_trips, decade %in% d)
+  b <- nrow(subset_data)
+  a[[d]] <- b
 
-decades_to_include <- unique(c(df$decade))
+}
+##plot heatmap by decade
+
+##Manually add decades, because previous decades were incorrect
+
+breaks <- c(1900, 1909, 1919, 1929, 1939, 1949, 1959, 1969, 1979, 1989,1999,2009,2011) 
+df$Decade <- cut(df$yyyy, breaks = breaks,labels = c("1900-1909","1910-1919","1920-1929", "1930-1939", "1940-1949", "1950-1959", "1960-2069","1970-2079","1980-2089","1990-1999", "2000-2009", "2010-2011"))
+glimpse(df)
+
+decades_to_include <- unique(c(df$Decade))
 
 plots_list3 <- list()
 
 for (d in decades_to_include) {
-  subset_data <- subset(df, decade %in% d)
+  subset_data <- subset(df, Decade %in% d)
+  row_count <- nrow(subset_data)
   
-  p <- ggplot(subset_data, aes(x = st_coordinates(geometry)[, 1], y = st_coordinates(geometry)[, 2])) +
-    stat_density_2d(aes(fill = ..density..), bins = 5, geom = "raster", contour = FALSE, show.legend = FALSE)+
+  p <- ggplot()+
+    stat_density_2d(data=subset_data, 
+                    aes(x = st_coordinates(geometry)[, 1], y = st_coordinates(geometry)[, 2],
+                        fill = ..density..), bins = 5, geom = "raster", contour = FALSE, show.legend = FALSE)+
     geom_sf(data = WA_base, inherit.aes = FALSE) +
-    labs(title = paste(d), x = "Longitude", y = "Latitude") +
+   # labs(title = paste(d), x = "Longitude", y = "Latitude") +
+    labs(title = paste(d, "(n=", row_count / 1000,")"), x = "Longitude", y = "Latitude") +
     paletteer::scale_fill_paletteer_c("viridis::plasma") +
     xlim(114.9851, 115.8) +
     ylim(-32.7966, -31.30936) +
-    theme_minimal(base_size=5) 
+    theme_minimal(base_size=5)
   
   plots_list3[[d]] <- p 
   
@@ -117,41 +136,10 @@ plot1 <- lapply(plots_list3, ggplotGrob)
 grid.arrange(grobs = plot1, ncol = 6, nrow = 2)
 
 
-##### broader periods #####
-###add broader periods
+##### heatmap by broader milestone years #####
 
 
-breaks <- c(1900, 1930, 1950, 1970, 1990, 2008, 2011)
-df$period <- cut(df$yyyy, breaks = breaks, labels = c("1900-1929", "1930-1949", "1950-1969", "1970-1989", "1990-2008", "2009-2011"))
-
-periods_to_include <- unique(c(df$period))
-plots_list4 <- list()
-
-for (d in periods_to_include) {
-  subset_data <- subset(df, period %in% d)
-  
-  p <- ggplot(subset_data, aes(x = st_coordinates(geometry)[, 1], y = st_coordinates(geometry)[, 2])) +
-    stat_density_2d(aes(fill = ..density..), bins = 45, geom = "raster", contour = FALSE, show.legend = FALSE) +
-    geom_sf(data = WA_base, inherit.aes = FALSE) +
-    labs(title = paste(d), x = "Longitude", y = "Latitude") +
-    paletteer::scale_fill_paletteer_c("viridis::plasma") +
-    xlim(114.9851, 115.8) +
-    ylim(-32.7966, -31.30936) +
-    theme_minimal(base_size=5) +
-    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-          panel.background = element_blank())
-  
-  plots_list4[[d]] <- p 
-  
-}
-
-plot2 <- lapply(plots_list4, ggplotGrob)
-grid.arrange(grobs = plot2, ncol = 6, nrow = 1)
-
-
-##### plots with contours ######
-
-###coarsen bathy and make df
+###coarsen bathy for contours and make df
 
 bathy_coarse <- aggregate(bathy, fact = 5)
 bathy_df_coarse <- as.data.frame(bathy_coarse, xy = TRUE)
@@ -161,24 +149,22 @@ names(bathy_df_coarse) <- c("x", "y", "z")
 
     contour_levels <- c(-200, -100, -50, -30, -20, -10)
     
-    breaks <- c(1900, 1931, 1950, 1970, 1990, 2008, 2011)
-    df$period <- cut(df$yyyy, breaks = breaks, labels = c("1900-1929 (n=65)", "1930-1949 (n=2)", "1950-1969 (n=364)", "1970-1989 (n=140)", "1990-2008 (n=203)", "2009-2011 (n=46)"))
-
-    periods_to_include <- unique(c(df$period))
+    breaks <- c(1900, 1929, 1949, 1969, 1989, 2008, 2011)
+    df$period <- cut(df$yyyy, breaks = breaks,labels = c("1900-1929", "1930-1949", "1950-1969", "1970-1989", "1990-2008", "2009-2011"))
     
-##calculate n for each period##
-    row_counts <- df %>%
-      group_by(period) %>%
-      summarize(count = n())
+    
+    periods_to_include <- unique(c(df$period))
+  
     
 ##open pdf to write to
-    pdf("my_plots3.pdf", width = 10, height = 10) 
+    pdf("my_plots4.pdf", width = 10, height = 10) 
     
 ##generate plot
     plots_list6 <- list()
     
     for (d in periods_to_include) {
       subset_data <- subset(df, period %in% d)
+      row_count <- nrow(subset_data)
       
       p <- ggplot() +
         stat_density_2d(data = subset_data, 
@@ -188,12 +174,8 @@ names(bathy_df_coarse) <- c("x", "y", "z")
                         geom = "raster", contour = FALSE, show.legend = FALSE) +
         geom_contour(data = bathy_df_coarse, aes(x = x, y = y, z = z), 
                      breaks = contour_levels, colour = 'white', linewidth = 0.1) +
-        # geom_text_contour(data = bathy_df_coarse, aes(x = x, y = y, z = z),        ##automatic contour labels
-        #                   breaks = contour_levels, size = 0.8,
-        #                   colour = 'white',
-        #                   label.placer = label_placer_n(1)) +
         geom_sf(data = WA_base, inherit.aes = FALSE) +
-        labs(title = paste(d), x = "Longitude", y = "Latitude") +
+        labs(title = paste0(d," (n=", row_count / 1000,")"), x = "Longitude", y = "Latitude") +
         paletteer::scale_fill_paletteer_c("viridis::plasma") +
         annotate(geom = "text", x = c(115.77, 115.85, 115.85, 115.88, 115.87, 115.78),           ###place names fewer      
                  y = c(-31.5, -31.8, -31.9, -32.06, -32.29, -32.6), 
@@ -216,7 +198,7 @@ names(bathy_df_coarse) <- c("x", "y", "z")
     
 dev.off()
 
-####another method####
+####another method for density plots####
 glimpse(df)
   d <- ggplot(df, (aes(x = st_coordinates(geometry)[, 1], y = st_coordinates(geometry)[, 2])))  
   

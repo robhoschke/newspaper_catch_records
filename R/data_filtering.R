@@ -6,9 +6,18 @@
 # Date:    April 2024
 ##
 
-# install.packages("sf")
-# install.packages("spatstat")
 # install.packages("paletteer")
+# install.packages("spatstat")
+# install.packages("sf")
+# install.packages("tibble")
+# install.packages("dplyr")
+# install.packages("tidyr")
+# install.packages("readr")
+# install.packages("ggplot2")
+# install.packages("tidyverse")
+# install.packages("MASS")
+# install.packages("ggpubr")
+# install.packages("car")
 # install.packages("maps")
 # install.packages("ggtext")
 # install.packages("metR")
@@ -16,7 +25,10 @@
 # install.packages("EnvStats")
 # install.packages("gridExtra")
 # install.packages("ggpubr")
-
+# install.packages("geosphere")
+# install.packages("osmdata")
+# install.packages("gratia")
+# install.packages("mgcv")
 
 library(paletteer)
 library(spatstat)
@@ -35,12 +47,18 @@ library(tidyverse)
 library(ggtext)
 library(metR)
 library(terra)
+library(geosphere)
+library(osmdata)
+library(gratia)
+library(mgcv)
 
 ##### import data#####
 dhu_records <- read.csv('data/all_dhufish_records_edited.csv')
 metro_area <- st_read('Qgis/shp/perth_metro.shp')
 ###perth_zones <- st_read('Qgis/shp/perth_rec_fsihing_zones.shp') ## old zones
 perth_zones <- st_read('Qgis/shp/rec_zones_fewer.shp') 
+perth_coastline <- st_read(('Qgis/shp/Perth_coastline.shp'))
+Freo_harbour <- st_read(('Qgis/shp/Freo_harbour.shp'))
 trip_location <- st_read('Qgis/shp/trip_location_estimate_complete.shp')
 WA_base <- st_read('Qgis/shp/basemap.shp')
 bathy <- rast("Qgis/raster/bathy_cropped1.tif")
@@ -60,6 +78,7 @@ head(fishing_trips)
 
 glimpse(fishing_trips)
 
+
 ##### centroid from each polygon for reference model #####
 glimpse(fishing_trips)
 plot(fishing_trips$geometry)
@@ -68,6 +87,7 @@ centroids <- st_centroid(fishing_trips)
 centroid_df <- data.frame(
   ID=centroids$ID,
   yyyy=centroids$yyyy,
+  month=centroids$mm,
   largest.dhufish.kg=centroids$largest.dhufish.kg,
   geometry=centroids$geometry
 )
@@ -78,6 +98,7 @@ dat <- centroid_df %>%
   st_join(st_as_sf(perth_zones)) %>%
   mutate(
     Zone = as.factor(Zone),
+    month = as.factor(month),
     latitude = st_coordinates(geometry)[, "Y"],
     scientific = "fish.size",
     echo_sounders = factor(ifelse(yyyy < 1970, "pre", "post"), levels = c("pre", "post")),
@@ -94,3 +115,18 @@ dat <- centroid_df %>%
 glimpse(dat)
 plot(dat)
 write.csv(dat, "data/population_data_centroids.csv")
+
+
+###add distance to shoreline variable
+
+dist <- geosphere::dist2Line(p = st_coordinates(dat), 
+                             line = st_coordinates(perth_coastline)[,1:2])
+
+#combine initial data with distance to coastline
+dat <- cbind(dat,dist) 
+glimpse(dat)
+
+
+
+
+
