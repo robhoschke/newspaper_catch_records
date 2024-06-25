@@ -47,10 +47,13 @@ summary(glm_model, dispersion=1)
 
 plot(mylm)
 plot(exp_model)
+plot(glm_model)
 
 # Add prexp_model# Add predictions to the dataframe (on the log scale)
 dataframe$log_predicted_distance <- predict(exp_model, newdata = dataframe)
 dataframe$lm_predicted_distance <- predict(mylm, newdata = dataframe)
+dataframe$glm_predicted_distance <- predict(glm_model, newdata = dataframe)
+
 # Back-transform the predictions to the original scale
 dataframe$predicted_distance <- exp(dataframe$log_predicted_distance)
 

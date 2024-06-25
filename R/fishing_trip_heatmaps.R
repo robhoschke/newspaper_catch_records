@@ -41,6 +41,13 @@ glimpse(df)
 summary(df$bathy)
 plot(largest.dhufish.kg~yyyy, data=df)
 
+filter(df, bathy>-20)
+filter(df, bathy>-10)
+filter(dat, bathy>-20)
+102291/820000
+257277/820000
+182/820
+361/820
 ##### sample of points for heatmaps#####
 
 ##### spatial plots all data #####
