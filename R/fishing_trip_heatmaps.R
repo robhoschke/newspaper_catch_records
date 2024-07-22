@@ -21,6 +21,7 @@ for (i in 1:nrow(fishing_trips)) {
                             decade = as.factor(rep(polygon$decade, 1000)))
   random_points_with_metadata <- cbind(metadata_df, geometry = random_points)
   all_random_points_with_metadata[[i]] <- random_points_with_metadata
+  print(i)
 }
 
 trip_points <- do.call(rbind, all_random_points_with_metadata)
@@ -38,17 +39,10 @@ mutate(
   bathy = ifelse(bathy >= 0, runif(sum(bathy >= 0), min = -10, max = -2), bathy))   ##resample positive bathy values
 
 glimpse(df)
+tail(df)
 summary(df$bathy)
 plot(largest.dhufish.kg~yyyy, data=df)
 
-filter(df, bathy>-20)
-filter(df, bathy>-10)
-filter(dat, bathy>-20)
-102291/820000
-257277/820000
-182/820
-361/820
-##### sample of points for heatmaps#####
 
 ##### spatial plots all data #####
 
@@ -186,21 +180,21 @@ names(bathy_df_coarse) <- c("x", "y", "z")
         paletteer::scale_fill_paletteer_c("viridis::plasma") +
         annotate(geom = "text", x = c(115.77, 115.85, 115.85, 115.88, 115.87, 115.78),           ###place names fewer      
                  y = c(-31.5, -31.8, -31.9, -32.06, -32.29, -32.6), 
-                 label = c("Two Rocks", "Hillarys", "Perth", "Fremantle", "Rockingham", "Mandurah"), size = 2.5) +
+                 label = c("Two Rocks", "Hillarys", "Perth", "Fremantle", "Rockingham", "Mandurah"), size = 2.7) +
         annotate(geom = "text", x = c(114.99, 115.11, 115.2, 115.45, 115.55, 115.6),           ###contour labels     
                  y = c(-31.55, -31.55, -31.55, -31.55,-31.55,-31.55), 
-                 label = c("-200", "-100", "-50", "-30", "-20", "-10"), size = 1.8, colour= 'white') +
+                 label = c("-200", "-100", "-50", "-30", "-20", "-10"), size = 2, colour= 'white') +
         coord_sf(xlim = c(114.9851, 116.0),
                  ylim = c(-32.7966, -31.30936)) +
-        theme_minimal(base_size = 7) +
+        theme_minimal(base_size = 9) +
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
               panel.background = element_blank())
       
       plots_list6[[d]] <- p 
     }
     
-    plot4 <- lapply(plots_list6, ggplotGrob)
-    grid.arrange(grobs = plot4, ncol = 3, nrow = 2)
+    plot <- lapply(plots_list6, ggplotGrob)
+    grid.arrange(grobs = plot, ncol = 3, nrow = 2)
   
     
 dev.off()

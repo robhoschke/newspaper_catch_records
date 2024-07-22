@@ -1,20 +1,19 @@
 ###
 # Project: Historical recreational fishing
 # Data:    fishing trip distance data
-# Task:    resampling spatial data for bootstrap against year
+# Task:    modelling distance of catches from fremantle over time
 # Author:  Rob
 # Date:    June 2024
+
+source("R/data_filtering.R")
 
 n_repeats <- 1000
 
 # Empty lists to store predictions
 all_yyyy_predictions <- vector("list", length = n_repeats)
+gam_summaries <- list()
 
 # Function to fit the GAM model
-fit_gam <- function(data) {
-  gam(distance ~ s(yyyy, k=5, bs="cr"),
-      family = gaussian(link = "identity"), data = data)
-}
 
 # Loop over repetitions
 for (i in 1:n_repeats) {
@@ -47,8 +46,24 @@ for (i in 1:n_repeats) {
     arrange(ID)
   
   # Fit a GAM model to the data
-  gam_model <- fit_gam(dt)
+  gam_model <- gam(distance ~ s(yyyy, k=5, bs="cr"),
+        family = gaussian(link = "identity"), data = dt)
   
+  summary(gam_model)
+  # Extract model summary statistics
+  gam_summary <- summary(gam_model)
+  deviance_explained <- gam_summary$dev.expl
+  aic <- AIC(gam_model)
+  
+  
+  # Store the summary data
+  gam_summaries[[i]] <- data.frame(
+    iteration = i,
+    deviance_explained = deviance_explained,
+    aic = aic,
+    s_yyyy_p_value = gam_summary$s.table[, "p-value"]
+  )
+
   # Generate predictions and standard errors for yyyy effect
   yyyy_seq <- seq(0, 107, length.out = 108)
   distance_mean <- mean(dt$distance)
@@ -60,26 +75,42 @@ for (i in 1:n_repeats) {
   yyyy_pred$iteration <- i
   all_yyyy_predictions[[i]] <- yyyy_pred
   
-  
 }
 
-# Combine the predictions into a single data frame
+gam_summary_df <- do.call(rbind, gam_summaries)
+write.csv(gam_summary_df, "data/dist_gam_summary.csv", row.names = FALSE)
+
 yyyy_predictions_df <- bind_rows(all_yyyy_predictions)
+write.csv(yyyy_predictions_df, "data/dist_preds.csv", row.names = FALSE)
 
-# Save the results to CSV files if needed
-write.csv(yyyy_predictions_df, "outputs/yyyy_predictions_dist.csv", row.names = FALSE)
+dist_preds <- read.csv("data/dist_preds.csv")
+glimpse(dist_preds)
+
+mean_values <- dist_preds %>%
+  group_by(yyyy) %>%
+  summarise(
+    fit_mean = mean(fit),
+    lwr_mean = mean(lwr),
+    upr_mean = mean(upr),
+    .groups = 'drop') %>% 
+  glimpse()
 
 
-
-ggplot()+
-  geom_line(data = yyyy_predictions_df, aes(x = yyyy, y = fit, group = iteration, color = as.factor(iteration), alpha = 0.01)) +
-  #geom_line(data = yyyy_predictions_df, aes(x = yyyy, y = fit, group = iteration, color = as.factor(iteration), alpha = 0.01)) + ##add line for base model
-  geom_point(data = dt, aes(x = yyyy, y = distance), inherit.aes = FALSE, alpha = 0.5)+
-  annotate("rect", xmin = 20, xmax= 45, ymin=0, ymax =100000, alpha = 0.5)+
-  scale_x_continuous(breaks = c(0, 26, 56, 86),
-                     labels = c("1904", "1930", "1960", "1990")) +
-  labs( x = "Year",
-       y = "Distance from Fremantle") +
+ggplot() +
+  geom_ribbon(data = mean_values, aes(x = yyyy+1904, ymin = lwr_mean, ymax = upr_mean,fill="salmon"), alpha = 1)+
+  geom_line(data = mean_values, aes(x = yyyy+1904, y = fit_mean)) +
+  geom_rug(data = dat, aes(x = yyyy, y = distance.1), position="jitter" , alpha = 0.4, sides="b")+
+  # geom_point(data = dat, aes(x = yyyy, y = distance.1), inherit.aes = FALSE, alpha = 0.5)+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-      panel.background = element_blank(), axis.line = element_line(colour = "black"), legend.position = "none") 
+        panel.background = element_blank(), axis.line = element_line(colour = "black"), legend.position = "none") +
+  scale_y_continuous(labels = function(y) y / 1000, limits=c(0,65000)) +
+  labs(title = "Predictions for distance effect across years",
+       x = "Year",
+       y = "Distance from Fremantle (km)") 
+
+
+dist_gam_summary <- read.csv("data/dist_gam_summary.csv")
+mean(dist_gam_summary$deviance_explained)
+
+
 

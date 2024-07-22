@@ -109,8 +109,8 @@ dat <- centroid_df %>%
     bathy = ifelse(bathy >= 0, runif(sum(bathy >= 0), min = -10, max = -2), bathy) ##resample positive bathy values
   ) %>% 
   arrange(ID) %>% 
-  mutate(depth=bathy*-1,
-         yyyy=as.numeric(yyyy)-1904)
+  mutate(depth=bathy*-1)     #,
+        # yyyy=as.numeric(yyyy)-1904)
 
 glimpse(dat)
 plot(dat)
@@ -122,8 +122,12 @@ write.csv(dat, "data/population_data_centroids.csv")
 dist <- geosphere::dist2Line(p = st_coordinates(dat), 
                              line = st_coordinates(perth_coastline)[,1:2])
 
+dist1 <- geosphere::dist2Line(p = st_coordinates(dat), 
+                              line = st_coordinates(Freo_harbour)[,1:2])
+
 #combine initial data with distance to coastline
 dat <- cbind(dat,dist) 
+dat <- cbind(dat,dist1)
 glimpse(dat)
 
 
