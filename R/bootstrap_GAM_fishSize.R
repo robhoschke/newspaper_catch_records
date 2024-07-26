@@ -60,6 +60,7 @@ for (i in 1:n_repeats) {
   # Fit a GAM model to the data
   gam_model <-  gam(largest.dhufish.kg ~ s(yyyy, k=4, bs="cr") + s(distance, k=4, bs="cr"),
                     family = gaussian(link = "identity"), data = dt)
+
   
   # Extract model summary statistics
   gam_summary <- summary(gam_model)

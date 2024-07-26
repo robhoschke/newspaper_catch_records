@@ -98,6 +98,7 @@ for (i in 1:n_repeats) {
   write.csv(gam_summary_df, "data/proportion_gam_summary.csv", row.names = FALSE)
   
   gam_sums <- read.csv("data/proportion_gam_summary.csv")
+  mean(gam_sums$deviance_explained)
   
   preds <- read.csv("outputs/proportion_nearshore_preds.csv")
   

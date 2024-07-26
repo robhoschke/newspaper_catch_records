@@ -29,6 +29,7 @@
 # install.packages("osmdata")
 # install.packages("gratia")
 # install.packages("mgcv")
+#install.packages("corrr")
 
 library(paletteer)
 library(spatstat)
@@ -51,6 +52,7 @@ library(geosphere)
 library(osmdata)
 library(gratia)
 library(mgcv)
+library(corrr)
 
 ##### import data#####
 dhu_records <- read.csv('data/all_dhufish_records_edited.csv')

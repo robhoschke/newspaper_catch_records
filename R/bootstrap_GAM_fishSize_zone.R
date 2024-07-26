@@ -19,7 +19,7 @@ source("R/data_filtering.R")
 #run over 1000 iterations
 
 
-n_repeats <- 2
+n_repeats <- 1000
 
 # Initialize a list to store the predictions from each iteration
 all_preds <- list()
@@ -105,13 +105,15 @@ for (i in 1:n_repeats) {
 
 ##gam summarys
 gam_summary_df <- do.call(rbind, gam_summaries)
+glimpse(gam_summary_df)
+mean(gam_summary_df$deviance_explained)
 
 ####bootstrap_GAM_fishsize_Zone
 # Combine all predictions into one data frame
 combined_preds <- bind_rows(all_preds)
-write.csv(combined_preds1, "data/bootstrap_gam_preds_byZone.csv")
+write.csv(combined_preds, "data/bootstrap_gam_preds_byZone.csv")
 combined_preds <- read.csv("data/bootstrap_gam_preds_byZone.csv")
-glimpse(combined_preds1)
+glimpse(combined_preds)
 
 
 mean_values_by_zone <- combined_preds %>%
@@ -128,8 +130,9 @@ mean_values_by_zone <- mean_values_by_zone %>%
   filter(!(Zone %in% c('nearshore_north', 'offshore_north', 'offshore_south') & yyyy < 50))  ###only model from 1950 onwars in selected zones
 
 
+
 p <- ggplot() +
-  geom_ribbon(data = mean_values_by_zone, aes(x = yyyy, ymin = lwr_mean, ymax = upr_mean,fill="salmon"), alpha = 1) +
+  geom_ribbon(data = mean_values_by_zone, aes(x = yyyy, ymin = lwr_mean, ymax = upr_mean,fill="salmon"), alpha = 0.3) +
   geom_line(data = mean_values_by_zone, aes(x = yyyy, y = fit_mean)) +
   geom_rug(data = dat, aes(x = yyyy - 1904, y = largest.dhufish.kg), position="jitter" , alpha = 0.4, sides="b")+
   scale_x_continuous(breaks = c(-4, 46, 96),
@@ -144,7 +147,15 @@ p <- ggplot() +
         panel.background = element_blank(), 
         axis.line = element_line(colour = "black"), 
         legend.position = "none") +
-  facet_wrap(~Zone, scales = "fixed")
+  facet_wrap(~Zone, scales = "fixed",
+             labeller = as_labeller(c(`near_rottnest` = "Rottnest Island", 
+                                      `nearshore_north` = "Nearshore North", 
+                                      `nearshore_south` = "Nearshore South",
+                                      `offshore_north` = "Offshore North",
+                                      `offshore_south` = "Offshore South"))) +
+  theme(strip.background = element_blank(), 
+        strip.placement = "outside",
+        strip.text.x = element_text(size=10, hjust = 0))
 
 print(p)
 

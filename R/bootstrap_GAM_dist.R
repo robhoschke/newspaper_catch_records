@@ -5,6 +5,10 @@
 # Author:  Rob
 # Date:    June 2024
 
+##to do
+#re-run with k=4
+
+
 source("R/data_filtering.R")
 
 n_repeats <- 1000
@@ -46,7 +50,7 @@ for (i in 1:n_repeats) {
     arrange(ID)
   
   # Fit a GAM model to the data
-  gam_model <- gam(distance ~ s(yyyy, k=5, bs="cr"),
+  gam_model <- gam(distance ~ s(yyyy, k=4, bs="cr"),
         family = gaussian(link = "identity"), data = dt)
   
   summary(gam_model)
@@ -97,7 +101,7 @@ mean_values <- dist_preds %>%
 
 
 ggplot() +
-  geom_ribbon(data = mean_values, aes(x = yyyy+1904, ymin = lwr_mean, ymax = upr_mean,fill="salmon"), alpha = 1)+
+  geom_ribbon(data = mean_values, aes(x = yyyy+1904, ymin = lwr_mean, ymax = upr_mean,fill="salmon"), alpha = 0.3)+
   geom_line(data = mean_values, aes(x = yyyy+1904, y = fit_mean)) +
   geom_rug(data = dat, aes(x = yyyy, y = distance.1), position="jitter" , alpha = 0.4, sides="b")+
   # geom_point(data = dat, aes(x = yyyy, y = distance.1), inherit.aes = FALSE, alpha = 0.5)+

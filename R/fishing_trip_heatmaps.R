@@ -150,8 +150,11 @@ names(bathy_df_coarse) <- c("x", "y", "z")
 
     contour_levels <- c(-200, -100, -50, -30, -20, -10)
     
-    breaks <- c(1900, 1929, 1949, 1969, 1989, 2008, 2011)
-    df$period <- cut(df$yyyy, breaks = breaks,labels = c("1900-1929", "1930-1949", "1950-1969", "1970-1989", "1990-2008", "2009-2011"))
+    # breaks <- c(1900, 1929, 1949, 1969, 1989, 2008, 2011)
+    # df$period <- cut(df$yyyy, breaks = breaks,labels = c("1900-1929", "1930-1949", "1950-1969", "1970-1989", "1990-2008", "2009-2011"))
+    
+    breaks <- c(1900, 1929, 1949, 1965, 1989, 2006, 2011)
+    df$period <- cut(df$yyyy, breaks = breaks,labels = c("1900-1929", "1930-1949", "1950-1965", "1966-1989", "1990-2006", "2007-2011"))
     
     
     periods_to_include <- unique(c(df$period))
