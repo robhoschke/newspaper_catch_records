@@ -153,8 +153,14 @@ names(bathy_df_coarse) <- c("x", "y", "z")
     # breaks <- c(1900, 1929, 1949, 1969, 1989, 2008, 2011)
     # df$period <- cut(df$yyyy, breaks = breaks,labels = c("1900-1929", "1930-1949", "1950-1969", "1970-1989", "1990-2008", "2009-2011"))
     
-    breaks <- c(1900, 1929, 1949, 1965, 1989, 2006, 2011)
-    df$period <- cut(df$yyyy, breaks = breaks,labels = c("1900-1929", "1930-1949", "1950-1965", "1966-1989", "1990-2006", "2007-2011"))
+    # breaks <- c(1900, 1929, 1949, 1965, 1989, 2006, 2011)
+    # df$period <- cut(df$yyyy, breaks = breaks,labels = c("1900-1929", "1930-1949", "1950-1965", "1966-1989", "1990-2006", "2007-2011"))
+     
+    # breaks <- c(1900, 1949, 1957, 1967, 1989, 2006, 2011)
+    # df$period <- cut(df$yyyy, breaks = breaks,labels = c("1900-1949", "1950-1957", "1958-1967", "1968-1989", "1990-2006", "2007-2011"))
+    
+    breaks <- c(1900, 1957, 1967, 1989, 2006, 2011)
+    df$period <- cut(df$yyyy, breaks = breaks,labels = c("1900-1957", "1958-1967", "1968-1989", "1990-2006", "2007-2011"))
     
     
     periods_to_include <- unique(c(df$period))
@@ -181,17 +187,17 @@ names(bathy_df_coarse) <- c("x", "y", "z")
         geom_sf(data = WA_base, inherit.aes = FALSE) +
         labs(title = paste0(d," (n=", row_count / 1000,")"), x = "Longitude", y = "Latitude") +
         paletteer::scale_fill_paletteer_c("viridis::plasma") +
-        annotate(geom = "text", x = c(115.77, 115.85, 115.85, 115.88, 115.87, 115.78),           ###place names fewer      
+        annotate(geom = "text", x = c(115.77, 115.85, 115.85, 115.88, 115.87, 115.78),             
                  y = c(-31.5, -31.8, -31.9, -32.06, -32.29, -32.6), 
                  label = c("Two Rocks", "Hillarys", "Perth", "Fremantle", "Rockingham", "Mandurah"), size = 2.7) +
-        annotate(geom = "text", x = c(114.99, 115.11, 115.2, 115.45, 115.55, 115.6),           ###contour labels     
+        annotate(geom = "text", x = c(114.99, 115.11, 115.2, 115.45, 115.55, 115.6),              
                  y = c(-31.55, -31.55, -31.55, -31.55,-31.55,-31.55), 
                  label = c("-200", "-100", "-50", "-30", "-20", "-10"), size = 2, colour= 'white') +
         coord_sf(xlim = c(114.9851, 116.0),
                  ylim = c(-32.7966, -31.30936)) +
         theme_minimal(base_size = 9) +
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-              panel.background = element_blank())
+              panel.background = element_blank()) 
       
       plots_list6[[d]] <- p 
     }
