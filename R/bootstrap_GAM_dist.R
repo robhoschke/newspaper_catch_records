@@ -90,6 +90,7 @@ write.csv(yyyy_predictions_df, "data/dist_preds.csv", row.names = FALSE)
 dist_preds <- read.csv("data/dist_preds.csv")
 glimpse(dist_preds)
 
+
 mean_values <- dist_preds %>%
   group_by(yyyy) %>%
   summarise(
@@ -101,10 +102,10 @@ mean_values <- dist_preds %>%
 
 
 ggplot() +
-  geom_ribbon(data = mean_values, aes(x = yyyy+1904, ymin = lwr_mean, ymax = upr_mean,fill="salmon"), alpha = 0.3)+
+  geom_ribbon(data = mean_values, aes(x = yyyy+1904, ymin = lwr_mean, ymax = upr_mean),fill="coral", alpha=0.7)+
   geom_line(data = mean_values, aes(x = yyyy+1904, y = fit_mean)) +
   geom_rug(data = dat, aes(x = yyyy, y = distance.1), position="jitter" , alpha = 0.4, sides="b")+
-  # geom_point(data = dat, aes(x = yyyy, y = distance.1), inherit.aes = FALSE, alpha = 0.5)+
+  #geom_point(data = dat, aes(x = yyyy, y = distance.1), inherit.aes = FALSE, alpha = 0.5)+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_line(colour = "black"), legend.position = "none") +
   scale_y_continuous(labels = function(y) y / 1000, limits=c(0,65000)) +

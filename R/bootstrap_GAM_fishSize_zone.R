@@ -132,7 +132,7 @@ mean_values_by_zone <- mean_values_by_zone %>%
 
 
 p <- ggplot() +
-  geom_ribbon(data = mean_values_by_zone, aes(x = yyyy, ymin = lwr_mean, ymax = upr_mean,fill="salmon"), alpha = 0.3) +
+  geom_ribbon(data = mean_values_by_zone, aes(x = yyyy, ymin = lwr_mean, ymax = upr_mean), fill = "coral", alpha = 0.7) +
   geom_line(data = mean_values_by_zone, aes(x = yyyy, y = fit_mean)) +
   geom_rug(data = dat, aes(x = yyyy - 1904, y = largest.dhufish.kg), position="jitter" , alpha = 0.4, sides="b")+
   scale_x_continuous(breaks = c(-4, 46, 96),
