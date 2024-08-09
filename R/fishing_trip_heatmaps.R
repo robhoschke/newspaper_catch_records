@@ -159,8 +159,8 @@ names(bathy_df_coarse) <- c("x", "y", "z")
     # breaks <- c(1900, 1949, 1957, 1967, 1989, 2006, 2011)
     # df$period <- cut(df$yyyy, breaks = breaks,labels = c("1900-1949", "1950-1957", "1958-1967", "1968-1989", "1990-2006", "2007-2011"))
     
-    breaks <- c(1900, 1957, 1967, 1989, 2006, 2011)
-    df$period <- cut(df$yyyy, breaks = breaks,labels = c("1900-1957", "1958-1967", "1968-1989", "1990-2006", "2007-2011"))
+    breaks <- c(1900, 1957, 1965, 1989, 2006, 2011)
+    df$period <- cut(df$yyyy, breaks = breaks,labels = c("1900-1957", "1958-1965", "1966-1989", "1990-2006", "2007-2011"))
     
     
     periods_to_include <- unique(c(df$period))
