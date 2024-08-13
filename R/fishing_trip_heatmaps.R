@@ -8,6 +8,7 @@
 
 source("R/data_filtering.R")
 
+
 ##### random points for each polygon#####             
 all_random_points_with_metadata <- list()
 
@@ -16,6 +17,7 @@ for (i in 1:nrow(fishing_trips)) {
   polygon <- fishing_trips[i, ]
   random_points <- st_sample(polygon$geometry, 1000)
   metadata_df <- data.frame(yyyy = rep(polygon$yyyy, 1000),
+                            mm = rep(polygon$mm, 1000),
                             ID = rep(polygon$ID, 1000),
                             largest.dhufish.kg = rep(polygon$largest.dhufish.kg, 1000),
                             decade = as.factor(rep(polygon$decade, 1000)))

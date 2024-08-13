@@ -56,7 +56,6 @@ yyyy_pred$fit <- predict(gam_mod, newdata = yyyy_pred, se.fit = TRUE)$fit
 yyyy_pred$se <- predict(gam_mod, newdata = yyyy_pred, se.fit = TRUE)$se.fit
 yyyy_pred$lwr <- yyyy_pred$fit - 1.96 * yyyy_pred$se
 yyyy_pred$upr <- yyyy_pred$fit + 1.96 * yyyy_pred$se
-yyyy_pred$iteration <- i
 
 ggplot()+
   geom_ribbon(data = yyyy_pred, aes(x = yyyy, ymin = lwr, ymax = upr) ,fill="coral", alpha=0.7)+
