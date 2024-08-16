@@ -12,11 +12,16 @@
 
 library(ggplot2)
 library(dplyr)
+library(cowplot)
 
 # Create 5-year bins
+# df <- df %>%
+#   mutate(yyyy_bin = cut(yyyy, breaks = c(1900, 1957, 1965, 1989, 2006, 2011))) %>%
+#   mutate(depth_category = ifelse(bathy > -20, "Nearshore", "Inshore Demersal")) 
+
 df <- df %>%
-  mutate(yyyy_bin = cut(yyyy, breaks = seq(floor(min(yyyy)/5)*5, ceiling(max(yyyy)/5)*5, by = 5), right = FALSE)) %>%
-  mutate(depth_category = ifelse(bathy > -20, "Nearshore", "Inshore Demersal")) 
+  mutate(yyyy_bin = cut(yyyy, breaks = c(1900, 1957, 1965, 1989, 2006, 2011), right = TRUE)) %>%
+  mutate(depth_category = ifelse(bathy > -20, "Nearshore", "Inshore Demersal"))
 
 # Summarize the data within each bin and divide counts by 1000
 summary_data <- df %>%
@@ -31,7 +36,7 @@ summary_data <- summary_data %>%
   ungroup()
 
 summary_data <- summary_data %>% 
-  mutate (yyyy_bin=str_remove_all(yyyy_bin, "\\[|\\)")) %>% 
+  mutate (yyyy_bin=str_remove_all(yyyy_bin, "\\(|\\]")) %>% 
   mutate(yyyy_bin=str_replace_all(yyyy_bin, ",", "-")) 
 
 # Calculate sample sizes for each bin
@@ -51,15 +56,33 @@ ggplot() +
   geom_text(data = sample_sizes, aes(x = yyyy_bin, y = 1.05, label = total_trips), size = 3, vjust = 0.5) +
   labs(
     x = "Year",
-    y = "Proportion of Trips",
-    fill = "Depth Category",
-    title = "Proportion of Fishing Trips by 5-Year Periods and Depth Category")+
+    y = "Proportion of dhufish catches",
+    fill = "Depth Category")+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_blank()) +
   theme(
-    axis.text.x = element_text(angle = 45, hjust = 1)
+    axis.text.x = element_text(angle = 90, hjust = 1)
   )
 
+
+## plot each time bin individually
+
+plots_list <- list()
+
+for( i in unique(summary_data$yyyy_bin)){
+  subset_period <- subset(summary_data, yyyy_bin %in% i)
+  p <- ggplot() +
+    geom_col(data=subset_period, aes(x = yyyy_bin, y = proportion, fill = depth_category),width=1) +
+    scale_fill_manual(values = c("Inshore Demersal" = "lightsalmon", "Nearshore" = "lightskyblue"))+
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+          panel.background = element_blank(), axis.line = element_blank()) 
+  plots_list[[i]] <- p 
+}
+
+leg <- cowplot::get_legend(plot[[1]])
+plot(leg)
+plot <- lapply(plots_list, ggplotGrob)
+grid.arrange(grobs = plot, ncol = 3, nrow = 2) 
 
 #### plot to overlay GAM - with continuous x-axis ####
 ###########

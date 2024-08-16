@@ -1,9 +1,13 @@
 ###
 # Project: Historical recreational fishing
 # Data:    historical fish size data
-# Task:    modelling fish size by zone
+# Task:    modelling fish size by depth zone
 # Author:  Rob
 # Date:    June 2024
+
+
+##to do
+#model separately for depth zones
 
 source("R/data_filtering.R")
 
@@ -14,12 +18,14 @@ source("R/data_filtering.R")
 #######
 #####
 
-##to do:
-#correct years for plots
-#run over 1000 iterations
 
 
-n_repeats <- 1
+
+#
+###
+#######
+########### both zones separately, rather than in interaction model 
+n_repeats <- 5
 
 # Initialize a list to store the predictions from each iteration
 all_preds <- list()
@@ -64,17 +70,23 @@ for (i in 1:n_repeats) {
   gam_model <- gam(largest.dhufish.kg ~ s(yyyy, k=4, bs="cr"),
                    family = gaussian(link = "identity"), data = dt %>% filter(depth_zone=="inshore_demersal"))
   
+  gam_model2 <- gam(largest.dhufish.kg ~ s(yyyy, k=4, bs="cr"),
+                   family = gaussian(link = "identity"), data = dt %>% filter(depth_zone=="nearshore"))
+  
   # Generate predictions for the current data
   pred_df <- dt %>% 
-    group_by(depth_zone) %>% 
     do({
-      newdata <- data.frame(yyyy = seq(min(1), max(110), length.out = 109),
-                            depth_zone = unique(.$depth_zone))
+      newdata <- data.frame(yyyy = seq(min(1), max(110), length.out = 109))
       pred <- predict(gam_model, newdata = newdata, se.fit = TRUE)
+      pred2 <- predict(gam_model2, newdata = newdata, se.fit = TRUE)
       newdata$fit <- pred$fit
+      newdata$fit2 <- pred2$fit
       newdata$se <- pred$se.fit
+      newdata$se2 <- pred2$se.fit
       newdata$lwr <- newdata$fit - 1.96 * newdata$se
+      newdata$lwr2 <- newdata$fit2 - 1.96 * newdata$se
       newdata$upr <- newdata$fit + 1.96 * newdata$se
+      newdata$upr2 <- newdata$fit2 + 1.96 * newdata$se
       newdata$iteration <- i  # Add iteration identifier
       newdata
     })
@@ -84,9 +96,6 @@ for (i in 1:n_repeats) {
 }
 
 
-
-####bootstrap_GAM_fishsize_Zone
-# Combine all predictions into one data frame
 combined_preds <- bind_rows(all_preds)
 #write.csv(combined_preds, "data/bootstrap_gam_preds_byZone.csv")
 #combined_preds <- read.csv("data/bootstrap_gam_preds_byZone.csv")
@@ -94,11 +103,14 @@ glimpse(combined_preds)
 
 
 mean_values_by_zone <- combined_preds %>%
-  group_by(yyyy, depth_zone) %>%
+  group_by(yyyy) %>%
   summarise(
     fit_mean = mean(fit),
     lwr_mean = mean(lwr),
     upr_mean = mean(upr),
+    fit_mean2 = mean(fit2),
+    lwr_mean2 = mean(lwr2),
+    upr_mean2 = mean(upr2),
     .groups = 'drop') %>% 
   glimpse()
 
@@ -110,9 +122,12 @@ subset_nearshore <- subset(dt, depth_zone=="nearshore")
 
 
 
+
 ggplot() +
   geom_ribbon(data = mean_values_by_zone, aes(x = yyyy, ymin = lwr_mean, ymax = upr_mean), fill = "coral", alpha = 0.4) +
   geom_line(data = mean_values_by_zone, aes(x = yyyy, y = fit_mean), col= "coral") +
+  geom_ribbon(data = mean_values_by_zone, aes(x = yyyy, ymin = lwr_mean2, ymax = upr_mean2), fill = "skyblue", alpha = 0.4) +
+  geom_line(data = mean_values_by_zone, aes(x = yyyy, y = fit_mean2), col= "skyblue") +
   scale_x_continuous(breaks = c(-4, 46, 96),
                      labels = c("1900", "1950", "2000")) +
   scale_y_continuous(limits = c(5, 20)) +
@@ -125,4 +140,8 @@ ggplot() +
         axis.line = element_line(colour = "black"), 
         legend.position = "none") 
 #facet_grid(~depth_zone, scales = "fixed")
+
+
+
+
 

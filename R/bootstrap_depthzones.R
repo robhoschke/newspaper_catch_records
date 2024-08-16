@@ -42,7 +42,7 @@ for (i in 1:n_repeats) {
   
   single_trip_points <- do.call(rbind, all_r_points_with_metadata)
   
-  dist <- geosphere::dist2Line(p = st_coordinates(single_trip_points$geometry), 
+  dist <- geosphere::dist2Line(p = st_coordinates(single_trip_points$geometry), ##distance from shore
                                line = st_coordinates(perth_coastline)[,1:2])
   
   # Combine initial data with distance to coastline
@@ -85,7 +85,6 @@ for (i in 1:n_repeats) {
 }
 
 
-
 ####bootstrap_GAM_fishsize_Zone
 # Combine all predictions into one data frame
 combined_preds <- bind_rows(all_preds)
@@ -112,15 +111,14 @@ subset_nearshore <- subset(dt, depth_zone=="nearshore")
 
 
 ggplot() +
-  geom_ribbon(data = mean_values_by_zone %>%filter(depth_zone == "nearshore"), aes(x = yyyy, ymin = lwr_mean, ymax = upr_mean), fill = "coral", alpha = 0.4) +
-  geom_line(data = mean_values_by_zone %>%filter(depth_zone == "nearshore") , aes(x = yyyy, y = fit_mean), col= "coral") +
-  geom_ribbon(data = mean_values_by_zone %>%filter(depth_zone == "inshore_demersal"), aes(x = yyyy, ymin = lwr_mean, ymax = upr_mean), fill = "lightblue", alpha = 0.4) +
-  geom_line(data = mean_values_by_zone %>%filter(depth_zone == "inshore_demersal") , aes(x = yyyy, y = fit_mean), col="skyblue") +
-  
-  geom_rug(data = dt %>% filter(depth_zone == "inshore_demersal"), aes(x = yyyy, y = largest.dhufish.kg), 
-           position = "jitter", alpha = 1, sides = "b", col="lightblue") +  
-  geom_rug(data = dt %>% filter(depth_zone == "nearshore"), aes(x = yyyy, y = largest.dhufish.kg), 
-           position = "jitter", alpha = 0.4, sides = "b", col="salmon") +
+  geom_line(data = mean_values_by_zone, aes(x = yyyy, y = fit_mean, colour= depth_zone)) +
+  geom_ribbon(data = mean_values_by_zone, aes(x = yyyy, ymin = lwr_mean, ymax = upr_mean, fill=depth_zone), alpha = 0.4) +
+  scale_fill_manual(values = c("inshore_demersal" = "lightblue",
+                                "nearshore"="salmon"))+
+  scale_colour_manual(values = c("inshore_demersal" = "lightblue",
+                               "nearshore"="salmon"), labels=c("inshore demersal (20-250m)", "nearshore (0-20m)"))+
+  geom_rug(data = dt, aes(x = yyyy, y = largest.dhufish.kg, colour = depth_zone),
+           position = "jitter", alpha = 0.4, sides = "b")+
   scale_x_continuous(breaks = c(-4, 46, 96),
                      labels = c("1900", "1950", "2000")) +
   scale_y_continuous(limits = c(5, 20)) +
@@ -130,7 +128,8 @@ ggplot() +
   theme(panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
         panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"), 
-        legend.position = "none") 
-  #facet_grid(~depth_zone, scales = "fixed")
+        axis.line = element_line(colour = "black")) 
+#facet_grid(~depth_zone, scales = "fixed")
+
+
 
