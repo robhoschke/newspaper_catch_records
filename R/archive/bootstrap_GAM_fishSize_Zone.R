@@ -1,13 +1,29 @@
+###
+# Project: Historical recreational fishing
+# Data:    historical fish size data
+# Task:    modelling fish size by zone
+# Author:  Rob
+# Date:    June 2024
+
+source("R/data_filtering.R")
+
+
+####gam by zone ####
+##############
+#########
+#######
+#####
 
 ##to do:
 #correct years for plots
 #run over 1000 iterations
 
 
-n_repeats <- 10
+n_repeats <- 1000
 
 # Initialize a list to store the predictions from each iteration
 all_preds <- list()
+gam_summaries <- list()
 
 # Loop over repetitions
 for (i in 1:n_repeats) {
@@ -44,8 +60,28 @@ for (i in 1:n_repeats) {
     arrange(ID)
   
   # Fit the GAM model
-  tst <- gam(largest.dhufish.kg ~ s(yyyy, by = Zone, k=4, bs="cr") + s(distance, k=4, bs="cr"),
-             family = gaussian(link = "identity"), data = dt)
+  gam_model <- gam(largest.dhufish.kg ~ s(yyyy, by = Zone, k=4, bs="cr") + s(distance, k=4, bs="cr"),
+                   family = gaussian(link = "identity"), data = dt)
+  
+  gam_summary <- summary(gam_model)
+  deviance_explained <- gam_summary$dev.expl
+  aic <- AIC(gam_model)
+  
+  # Extract p-values (Pr(>|t|)) for the smooth terms
+  p_values <- gam_summary$s.table[, "p-value"]
+  
+  # Store the summary data
+  gam_summaries[[i]] <- data.frame(
+    iteration = i,
+    deviance_explained = deviance_explained,
+    aic = aic,
+    s_yyyy_Rottnest = p_values["s(yyyy):Zonenear_rottnest"],
+    s_yyyy_NN = p_values["s(yyyy):Zonenearshore_north"],
+    s_yyyy_NS = p_values["s(yyyy):Zonenearshore_south"],
+    s_yyyy_ON = p_values["s(yyyy):Zoneoffshore_north"],
+    s_yyyy_OS = p_values["s(yyyy):Zoneoffshore_south"],
+    s_distance_p_value = p_values["s(distance)"]
+  )
   
   # Generate predictions for the current data
   pred_df <- dt %>% 
@@ -54,7 +90,7 @@ for (i in 1:n_repeats) {
       newdata <- data.frame(yyyy = seq(min(1), max(110), length.out = 109),
                             distance = mean(.$distance),
                             Zone = unique(.$Zone))
-      pred <- predict(tst, newdata = newdata, se.fit = TRUE)
+      pred <- predict(gam_model, newdata = newdata, se.fit = TRUE)
       newdata$fit <- pred$fit
       newdata$se <- pred$se.fit
       newdata$lwr <- newdata$fit - 1.96 * newdata$se
@@ -67,16 +103,20 @@ for (i in 1:n_repeats) {
   all_preds[[i]] <- pred_df
 }
 
+##gam summarys
+gam_summary_df <- do.call(rbind, gam_summaries)
+glimpse(gam_summary_df)
+mean(gam_summary_df$deviance_explained)
 
 ####bootstrap_GAM_fishsize_Zone
 # Combine all predictions into one data frame
-combined_preds1 <- bind_rows(all_preds)
+combined_preds <- bind_rows(all_preds)
 write.csv(combined_preds, "data/bootstrap_gam_preds_byZone.csv")
 combined_preds <- read.csv("data/bootstrap_gam_preds_byZone.csv")
-glimpse(combined_preds1)
+glimpse(combined_preds)
 
 
-mean_values_by_zone <- combined_preds1 %>%
+mean_values_by_zone <- combined_preds %>%
   group_by(yyyy, Zone) %>%
   summarise(
     fit_mean = mean(fit),
@@ -84,17 +124,21 @@ mean_values_by_zone <- combined_preds1 %>%
     upr_mean = mean(upr),
     .groups = 'drop') %>% 
   glimpse()
- 
+
 
 mean_values_by_zone <- mean_values_by_zone %>%
-  filter(!(Zone %in% c('nearshore_north', 'offshore_north', 'offshore_south') & yyyy < 50))
+  filter(!(Zone %in% c('nearshore_north', 'offshore_north', 'offshore_south') & yyyy < 50))  ###only model from 1950 onwars in selected zones
+
 
 
 p <- ggplot() +
+  geom_ribbon(data = mean_values_by_zone, aes(x = yyyy, ymin = lwr_mean, ymax = upr_mean), fill = "coral", alpha = 0.7) +
   geom_line(data = mean_values_by_zone, aes(x = yyyy, y = fit_mean)) +
-  geom_ribbon(data = mean_values_by_zone, aes(x = yyyy, ymin = lwr_mean, ymax = upr_mean,fill="orange"), alpha = 0.4) +
-  
-  geom_point(data = dat, aes(x = yyyy - 1904, y = largest.dhufish.kg), size = 0.2) +
+  geom_rug(data = dat, aes(x = yyyy - 1904, y = largest.dhufish.kg), position="jitter" , alpha = 0.4, sides="b")+
+  scale_x_continuous(breaks = c(-4, 46, 96),
+                     labels = c("1900", "1950", "2000")) +
+  scale_y_continuous(limits = c(0, 25)) +
+  #geom_point(data = dat, aes(x = yyyy - 1904, y = largest.dhufish.kg), size = 0.2) +
   labs(title = "Effect of year by zone with multiple iterations", 
        x = "Year", 
        y = "Dhufish size (kg)") +
@@ -103,9 +147,15 @@ p <- ggplot() +
         panel.background = element_blank(), 
         axis.line = element_line(colour = "black"), 
         legend.position = "none") +
-  facet_wrap(~Zone, scales = "fixed")
+  facet_wrap(~Zone, scales = "fixed",
+             labeller = as_labeller(c(`near_rottnest` = "Rottnest Island", 
+                                      `nearshore_north` = "Nearshore North", 
+                                      `nearshore_south` = "Nearshore South",
+                                      `offshore_north` = "Offshore North",
+                                      `offshore_south` = "Offshore South"))) +
+  theme(strip.background = element_blank(), 
+        strip.placement = "outside",
+        strip.text.x = element_text(size=10, hjust = 0))
 
 print(p)
-
-
 

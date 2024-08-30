@@ -49,8 +49,10 @@ plot(largest.dhufish.kg~yyyy, data=df)
 ##### spatial plots all data #####
 
 # Plot the points
+glimpse(df$geometry)
 plot(df$geometry, 
-     pch = 20, cex = 0.2)
+     pch = 20, cex = 0.02)
+
 
 ##### spatial plots by decade #####
 
@@ -77,15 +79,17 @@ ggplot(df, aes(x = st_coordinates(geometry)[, 1], y = st_coordinates(geometry)[,
   ylim(-32.7966, -31.30936) +
   scale_fill_gradient(trans = "log") +
   labs( x = "Longitude", y = "Latitude") +
-  theme_minimal() + 
-  geom_point(size=0.5) 
+  theme_minimal()  
+  #geom_point(size=0.5) 
 
 ggplot(df, aes(x = st_coordinates(geometry)[, 1], y = st_coordinates(geometry)[, 2])) +
   stat_density_2d(aes(fill = ..density..), bins=20, geom = "raster", contour=FALSE) +
   scale_fill_gradient(trans = "log") +
+  paletteer::scale_fill_paletteer_c("viridis::plasma") +
   labs( x = "Longitude", y = "Latitude") +
-  theme_minimal() + 
-  geom_point(size=0.5) 
+  theme_minimal() +
+  geom_sf(data = WA_base, inherit.aes = FALSE)
+  
 
 ggplot(df, aes(x = st_coordinates(geometry)[, 1], y = st_coordinates(geometry)[, 2])) +
   geom_bin2d(bins=40) +
@@ -152,17 +156,8 @@ names(bathy_df_coarse) <- c("x", "y", "z")
 
     contour_levels <- c(-200, -100, -50, -30, -20, -10)
     
-    # breaks <- c(1900, 1929, 1949, 1969, 1989, 2008, 2011)
-    # df$period <- cut(df$yyyy, breaks = breaks,labels = c("1900-1929", "1930-1949", "1950-1969", "1970-1989", "1990-2008", "2009-2011"))
-    
-    # breaks <- c(1900, 1929, 1949, 1965, 1989, 2006, 2011)
-    # df$period <- cut(df$yyyy, breaks = breaks,labels = c("1900-1929", "1930-1949", "1950-1965", "1966-1989", "1990-2006", "2007-2011"))
-     
-    # breaks <- c(1900, 1949, 1957, 1967, 1989, 2006, 2011)
-    # df$period <- cut(df$yyyy, breaks = breaks,labels = c("1900-1949", "1950-1957", "1958-1967", "1968-1989", "1990-2006", "2007-2011"))
-    
-    breaks <- c(1900, 1957, 1965, 1989, 2006, 2011)
-    df$period <- cut(df$yyyy, breaks = breaks,labels = c("1900-1957", "1958-1965", "1966-1989", "1990-2006", "2007-2011"))
+    breaks <- c(1900, 1956, 1965, 1989, 2006, 2011)
+    df$period <- cut(df$yyyy, breaks = breaks,labels = c("A: 1900-1956", "B: 1957-1965", "C: 1966-1989", "D: 1990-2006", "E: 2007-2011"))
     
     
     periods_to_include <- unique(c(df$period))
@@ -212,7 +207,6 @@ dev.off()
 
 ####another method for density plots####
 glimpse(df)
-  d <- ggplot(df, (aes(x = st_coordinates(geometry)[, 1], y = st_coordinates(geometry)[, 2])))  
   
  d + stat_density_2d(
    geom = "raster",
@@ -223,7 +217,6 @@ glimpse(df)
    geom_sf(data = WA_base, inherit.aes = FALSE)+
    coord_sf(xlim = c(114.9851, 115.9),
             ylim = c(-32.7966, -31.30936))
-  
   
 
     

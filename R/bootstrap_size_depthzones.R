@@ -15,8 +15,7 @@ source("R/data_filtering.R")
 #####
 
 ##to do:
-#correct years for plots
-#run over 1000 iterations
+#run over 1000 iterations - completed and saved preds on 30/08
 
 
 n_repeats <- 1000
@@ -42,7 +41,7 @@ for (i in 1:n_repeats) {
   
   single_trip_points <- do.call(rbind, all_r_points_with_metadata)
   
-  dist <- geosphere::dist2Line(p = st_coordinates(single_trip_points$geometry), 
+  dist <- geosphere::dist2Line(p = st_coordinates(single_trip_points$geometry), ##distance from shore
                                line = st_coordinates(perth_coastline)[,1:2])
   
   # Combine initial data with distance to coastline
@@ -54,42 +53,23 @@ for (i in 1:n_repeats) {
       bathy = extract(bathy, .)$bathy_cropped1,
       bathy = ifelse(bathy >= 0, runif(sum(bathy >= 0), min = -10, max = -2), bathy), # Resample positive bathy values
       depth = bathy * -1,
+      depth_zone = as.factor(ifelse(depth <= 20, "nearshore", "inshore_demersal")), # Add depth_zone column
       yyyy = as.numeric(yyyy) - 1904,
       iteration = i  # Add iteration number
     ) %>%
     arrange(ID)
   
   # Fit the GAM model
-  gam_model <- gam(largest.dhufish.kg ~ s(yyyy, by = Zone, k=4, bs="cr") + s(distance, k=4, bs="cr"),
+  gam_model <- gam(largest.dhufish.kg ~ s(yyyy, by = depth_zone, k=4, bs="cr") + s(distance, k=4, bs="cr"),
                    family = gaussian(link = "identity"), data = dt)
-  
-  gam_summary <- summary(gam_model)
-  deviance_explained <- gam_summary$dev.expl
-  aic <- AIC(gam_model)
-  
-  # Extract p-values (Pr(>|t|)) for the smooth terms
-  p_values <- gam_summary$s.table[, "p-value"]
-  
-  # Store the summary data
-  gam_summaries[[i]] <- data.frame(
-    iteration = i,
-    deviance_explained = deviance_explained,
-    aic = aic,
-    s_yyyy_Rottnest = p_values["s(yyyy):Zonenear_rottnest"],
-    s_yyyy_NN = p_values["s(yyyy):Zonenearshore_north"],
-    s_yyyy_NS = p_values["s(yyyy):Zonenearshore_south"],
-    s_yyyy_ON = p_values["s(yyyy):Zoneoffshore_north"],
-    s_yyyy_OS = p_values["s(yyyy):Zoneoffshore_south"],
-    s_distance_p_value = p_values["s(distance)"]
-  )
-  
+
   # Generate predictions for the current data
   pred_df <- dt %>% 
-    group_by(Zone) %>% 
+    group_by(depth_zone) %>% 
     do({
       newdata <- data.frame(yyyy = seq(min(1), max(110), length.out = 109),
                             distance = mean(.$distance),
-                            Zone = unique(.$Zone))
+                            depth_zone = unique(.$depth_zone))
       pred <- predict(gam_model, newdata = newdata, se.fit = TRUE)
       newdata$fit <- pred$fit
       newdata$se <- pred$se.fit
@@ -103,21 +83,18 @@ for (i in 1:n_repeats) {
   all_preds[[i]] <- pred_df
 }
 
-##gam summarys
-gam_summary_df <- do.call(rbind, gam_summaries)
-glimpse(gam_summary_df)
-mean(gam_summary_df$deviance_explained)
 
 ####bootstrap_GAM_fishsize_Zone
 # Combine all predictions into one data frame
 combined_preds <- bind_rows(all_preds)
-write.csv(combined_preds, "data/bootstrap_gam_preds_byZone.csv")
-combined_preds <- read.csv("data/bootstrap_gam_preds_byZone.csv")
+#write.csv(combined_preds, "outputs/preds_sizebydepthzone_1000reps.csv")
+#combined_preds <- read.csv("data/preds_sizebydepthzone_1000reps.csv")
 glimpse(combined_preds)
 
+summary(gam_model)
 
 mean_values_by_zone <- combined_preds %>%
-  group_by(yyyy, Zone) %>%
+  group_by(yyyy, depth_zone) %>%
   summarise(
     fit_mean = mean(fit),
     lwr_mean = mean(lwr),
@@ -126,36 +103,37 @@ mean_values_by_zone <- combined_preds %>%
   glimpse()
 
 
-mean_values_by_zone <- mean_values_by_zone %>%
-  filter(!(Zone %in% c('nearshore_north', 'offshore_north', 'offshore_south') & yyyy < 50))  ###only model from 1950 onwars in selected zones
-
-
-
-p <- ggplot() +
-  geom_ribbon(data = mean_values_by_zone, aes(x = yyyy, ymin = lwr_mean, ymax = upr_mean), fill = "coral", alpha = 0.7) +
-  geom_line(data = mean_values_by_zone, aes(x = yyyy, y = fit_mean)) +
-  geom_rug(data = dat, aes(x = yyyy - 1904, y = largest.dhufish.kg), position="jitter" , alpha = 0.4, sides="b")+
+ggplot() +
+  geom_line(data = mean_values_by_zone, aes(x = yyyy, y = fit_mean, colour = depth_zone)) +
+  geom_ribbon(data = mean_values_by_zone, aes(x = yyyy, ymin = lwr_mean, ymax = upr_mean, fill = depth_zone), alpha = 0.4) +
+  scale_fill_manual(values = c("nearshore" = "salmon", "inshore_demersal" = "skyblue"),
+                    labels = c("midshore (20-250m)","nearshore (0-20m)")) +
+  scale_colour_manual(values = c("nearshore" = "salmon","inshore_demersal" = "lightblue"), 
+                      labels = c( "midshore (20-250m)","nearshore (0-20m)")) +
+  geom_rug(data = dt, aes(x = yyyy, y = largest.dhufish.kg, colour = depth_zone),
+           position = "jitter", alpha = 0.4, sides = "b") +
   scale_x_continuous(breaks = c(-4, 46, 96),
                      labels = c("1900", "1950", "2000")) +
-  scale_y_continuous(limits = c(0, 25)) +
-  #geom_point(data = dat, aes(x = yyyy - 1904, y = largest.dhufish.kg), size = 0.2) +
-  labs(title = "Effect of year by zone with multiple iterations", 
+  scale_y_continuous(limits = c(0, 20)) +
+  labs(
        x = "Year", 
-       y = "Dhufish size (kg)") +
+       y = "Dhufish size (kg)",
+       colour = "Depth zone",
+       fill = "Depth zone") +
   theme(panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
         panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"), 
-        legend.position = "none") +
-  facet_wrap(~Zone, scales = "fixed",
-             labeller = as_labeller(c(`near_rottnest` = "Rottnest Island", 
-                                      `nearshore_north` = "Nearshore North", 
-                                      `nearshore_south` = "Nearshore South",
-                                      `offshore_north` = "Offshore North",
-                                      `offshore_south` = "Offshore South"))) +
-  theme(strip.background = element_blank(), 
-        strip.placement = "outside",
-        strip.text.x = element_text(size=10, hjust = 0))
+        axis.line = element_line(colour = "black"),
+        legend.position = c(0.8,0.2)) +
+  guides(
+    fill = guide_legend(reverse = TRUE),
+    colour = guide_legend(reverse = TRUE)
+  )
 
-print(p)
+
+
+
+
+
+
 

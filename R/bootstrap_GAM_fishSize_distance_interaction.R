@@ -87,12 +87,12 @@ for (i in 1:n_repeats) {
     yyyy_seq <- seq(0, 107, length.out = 108)
     
     # Calculate Q1, mean, and Q3 for the distance
-    q1_distance <- quantile(dt$distance, 0.25)
+    lower_distance <- quantile(dt$distance, 0.05)
     mean_distance <- mean(dt$distance)
-    q3_distance <- quantile(dt$distance, 0.75)
+    upper_distance <- quantile(dt$distance, 0.95)
     
     # List of distances to loop through
-    distances <- list(Q1 = q1_distance, Mean = mean_distance, Q3 = q3_distance)
+    distances <- list(lower = lower_distance, Mean = mean_distance, upper = upper_distance)
     
     # Loop over the different distances (Q1, mean, Q3)
     for (dist_name in names(distances)) {
@@ -119,7 +119,7 @@ gam_summary_df <- do.call(rbind, gam_summaries)
 yyyy_predictions_df <- bind_rows(all_yyyy_predictions)
 distance_predictions_df <- bind_rows(all_distance_predictions)
 
-glimpse()
+tail(yyyy_predictions_df)
 # Save the results to CSV files if needed
 write.csv(yyyy_predictions_df, "outputs/yyyy_predictions.csv", row.names = FALSE)
 write.csv(distance_predictions_df, "outputs/distance_predictions.csv", row.names = FALSE)

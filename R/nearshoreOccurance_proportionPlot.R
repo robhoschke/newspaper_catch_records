@@ -20,7 +20,7 @@ library(cowplot)
 #   mutate(depth_category = ifelse(bathy > -20, "Nearshore", "Inshore Demersal")) 
 
 df <- df %>%
-  mutate(yyyy_bin = cut(yyyy, breaks = c(1900, 1957, 1965, 1989, 2006, 2011), right = TRUE)) %>%
+  mutate(yyyy_bin = cut(yyyy, breaks = c(1900, 1956, 1965, 1989, 2006, 2011), right = TRUE)) %>%
   mutate(depth_category = ifelse(bathy > -20, "Nearshore", "Inshore Demersal"))
 
 # Summarize the data within each bin and divide counts by 1000
@@ -50,19 +50,19 @@ sample_sizes <- summary_data %>%
 ##########################
 
 ggplot() +
-  geom_col(data=summary_data, aes(x = yyyy_bin, y = proportion, fill = depth_category)) +
-  geom_col(position = "stack") +
+  geom_col(data=summary_data, aes(x = yyyy_bin, y = proportion, fill = depth_category), position = "stack") +
   scale_fill_manual(values = c("Inshore Demersal" = "lightsalmon", "Nearshore" = "lightskyblue")) +
-  geom_text(data = sample_sizes, aes(x = yyyy_bin, y = 1.05, label = total_trips), size = 3, vjust = 0.5) +
+#  geom_text(data = sample_sizes, aes(x = yyyy_bin, y = 1.05, label = total_trips), size = 3, vjust = 0.5) +
   labs(
-    x = "Year",
+    x = "Time period",
     y = "Proportion of dhufish catches",
-    fill = "Depth Category")+
+    fill = "Depth category")+
+  scale_x_discrete (labels= c("A", "B", "C", "D", "E")) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), axis.line = element_blank()) +
-  theme(
-    axis.text.x = element_text(angle = 90, hjust = 1)
-  )
+        panel.background = element_blank(), axis.line = element_blank(),
+        axis.text.x = element_text(vjust = 5),
+        axis.ticks.x = element_blank(),
+        text = element_text(size = 20))
 
 
 ## plot each time bin individually
@@ -74,8 +74,12 @@ for( i in unique(summary_data$yyyy_bin)){
   p <- ggplot() +
     geom_col(data=subset_period, aes(x = yyyy_bin, y = proportion, fill = depth_category),width=1) +
     scale_fill_manual(values = c("Inshore Demersal" = "lightsalmon", "Nearshore" = "lightskyblue"))+
+    labs(y = "Proportion of catches")+
     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-          panel.background = element_blank(), axis.line = element_blank()) 
+          panel.background = element_blank(), axis.line = element_blank(),
+          axis.ticks.x = element_blank(), axis.text.x = element_blank(),
+          axis.title.x = element_blank())+
+    guides(fill = "none")
   plots_list[[i]] <- p 
 }
 
