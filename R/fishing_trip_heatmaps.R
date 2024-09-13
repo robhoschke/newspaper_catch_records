@@ -164,7 +164,7 @@ names(bathy_df_coarse) <- c("x", "y", "z")
   
     
 ##open pdf to write to
-    pdf("my_plots4.pdf", width = 10, height = 10) 
+    pdf("my_plots99.pdf", width = 10, height = 10) 
     
 ##generate plot
     plots_list6 <- list()
@@ -184,9 +184,15 @@ names(bathy_df_coarse) <- c("x", "y", "z")
         geom_sf(data = WA_base, inherit.aes = FALSE) +
         labs(title = paste0(d," (n=", row_count / 1000,")"), x = "Longitude", y = "Latitude") +
         paletteer::scale_fill_paletteer_c("viridis::plasma") +
-        annotate(geom = "text", x = c(115.77, 115.85, 115.85, 115.88, 115.87, 115.78),             
-                 y = c(-31.5, -31.8, -31.9, -32.06, -32.29, -32.6), 
-                 label = c("Two Rocks", "Hillarys", "Perth", "Fremantle", "Rockingham", "Mandurah"), size = 2.7) +
+        # annotate(geom = "text", x = c(115.77, 115.85, 115.85, 115.88, 115.87, 115.78),             
+        #          y = c(-31.5, -31.8, -31.9, -32.06, -32.29, -32.6), 
+        #          label = c("Two Rocks", "Hillarys", "Perth", "Fremantle", "Rockingham", "Mandurah"), size = 2.7) +
+        annotate(geom = "text", x = c(115.77, 115.85, 115.88, 115.78),             
+                 y = c(-31.5, -31.8, -32.06, -32.6), 
+                 label = c("Two Rocks", "Hillarys",  "Fremantle", "Mandurah"), size = 2.7)+
+        annotate(geom = "text", x = c(115.5),             
+                 y = c(-31.92), 
+                 label = c("Rottnest Island"), size = 2.7, colour = 'white') +
         annotate(geom = "text", x = c(114.99, 115.11, 115.2, 115.45, 115.55, 115.6),              
                  y = c(-31.55, -31.55, -31.55, -31.55,-31.55,-31.55), 
                  label = c("-200", "-100", "-50", "-30", "-20", "-10"), size = 2, colour= 'white') +
