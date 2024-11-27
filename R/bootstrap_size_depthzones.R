@@ -1,21 +1,15 @@
 ###
 # Project: Historical recreational fishing
 # Data:    historical fish size data
-# Task:    modelling fish size by zone
+# Task:    modelling fish size, using depth zone as a covariate
 # Author:  Rob
 # Date:    June 2024
 
 source("R/data_filtering.R")
 
 
-####gam by zone ####
-##############
-#########
-#######
-#####
-
 ##to do:
-#run over 1000 iterations - completed and saved preds on 30/08
+#save GAM summaries
 
 
 n_repeats <- 1000
@@ -62,6 +56,23 @@ for (i in 1:n_repeats) {
   # Fit the GAM model
   gam_model <- gam(largest.dhufish.kg ~ s(yyyy, by = depth_zone, k=4, bs="cr") + s(distance, k=4, bs="cr"),
                    family = gaussian(link = "identity"), data = dt)
+  
+  gam_summary <- summary(gam_model)
+  deviance_explained <- gam_summary$dev.expl
+  aic <- AIC(gam_model)
+  
+  # Extract p-values (Pr(>|t|)) for the smooth terms
+  p_values <- gam_summary$s.table[, "p-value"]
+  
+  # Store the summary data
+  gam_summaries[[i]] <- data.frame(
+    iteration = i,
+    deviance_explained = deviance_explained,
+    aic = aic,
+    s_distance_p_value = p_values["s(distance)"],
+    s_yyyyinshore_p_value = p_values["s(yyyy):depth_zoneinshore_demersal"],
+    s_yyyynearshore_p_value = p_values["s(yyyy):depth_zonenearshore"]
+  )
 
   # Generate predictions for the current data
   pred_df <- dt %>% 
@@ -84,14 +95,14 @@ for (i in 1:n_repeats) {
 }
 
 
-####bootstrap_GAM_fishsize_Zone
-# Combine all predictions into one data frame
-combined_preds <- bind_rows(all_preds)
-#write.csv(combined_preds, "outputs/preds_sizebydepthzone_1000reps.csv")
-#combined_preds <- read.csv("data/preds_sizebydepthzone_1000reps.csv")
+gam_summary_df <- do.call(rbind, gam_summaries)
+#write.csv(gam_summary_df, "outputs/gam_summary_sizebydepthzone_1000reps.csv") ## run once, saved on 10/10
+combined_preds <- bind_rows(all_preds) ## run once
+#write.csv(combined_preds, "outputs/preds_sizebydepthzone_1000reps.csv")    ##run once, saved on 30/8
+combined_preds <- read.csv("outputs/preds_sizebydepthzone_1000reps.csv")
 glimpse(combined_preds)
 
-summary(gam_model)
+mean(gam_summary_df$deviance_explained)
 
 mean_values_by_zone <- combined_preds %>%
   group_by(yyyy, depth_zone) %>%
@@ -110,7 +121,7 @@ ggplot() +
                     labels = c("midshore (20-250m)","nearshore (0-20m)")) +
   scale_colour_manual(values = c("nearshore" = "salmon","inshore_demersal" = "lightblue"), 
                       labels = c( "midshore (20-250m)","nearshore (0-20m)")) +
-  geom_rug(data = dt, aes(x = yyyy, y = largest.dhufish.kg, colour = depth_zone),
+  geom_rug(data = dat, aes(x = yyyy-1904, y = largest.dhufish.kg, colour = depth_zone),
            position = "jitter", alpha = 0.4, sides = "b") +
   scale_x_continuous(breaks = c(-4, 46, 96),
                      labels = c("1900", "1950", "2000")) +
@@ -132,7 +143,55 @@ ggplot() +
 
 
 
+#####
+####
+##
+#rug using segments rather than default
 
+sub1 <- subset(dat, depth_zone == "nearshore")
+sub2 <- subset(dat, depth_zone == "inshore_demersal")
+
+
+ggplot() +
+  geom_line(data = mean_values_by_zone, aes(x = yyyy, y = fit_mean, colour = depth_zone)) +
+  geom_ribbon(data = mean_values_by_zone, aes(x = yyyy, ymin = lwr_mean, ymax = upr_mean, fill = depth_zone), alpha = 0.4) +
+  scale_fill_manual(values = c("nearshore" = "skyblue", "inshore_demersal" = "salmon"),
+                    labels = c("inshore demersal (20-250m)","nearshore (0-20m)")) +
+  scale_colour_manual(values = c("nearshore" = "skyblue","inshore_demersal" = "salmon"), 
+                      labels = c( "inshore demersal (20-250m)","nearshore (0-20m)")) +
+  # geom_rug(data = dat, aes(x = yyyy-1904, y = largest.dhufish.kg, colour = depth_zone),
+  #          position = "jitter", alpha = 0.4, sides = "b") +
+  geom_segment(data = sub2,
+    aes(
+      x = yyyy-1904,
+      y    = -1,
+      yend = -0.5
+    ), colour = "salmon",
+    position = position_jitter(width = 0.5, height = 0), alpha = 0.4) +
+  geom_segment(data = sub1,
+               aes(
+                 x = yyyy-1904,
+                 y    = -0.5,
+                 yend = 0
+               ), colour = "skyblue",
+               position = position_jitter(width = 0.5, height = 0), alpha = 0.4) +
+  scale_x_continuous(breaks = c(-4, 46, 96),
+                     labels = c("1900", "1950", "2000")) +
+  scale_y_continuous(limits = c(-1, 20), expand = c(0,0)) +
+  labs(
+    x = "Year", 
+    y = "Dhufish size (kg)",
+    colour = "Depth zone",
+    fill = "Depth zone") +
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"),
+        legend.position = c(0.8,0.2)) +
+  guides(
+    fill = guide_legend(reverse = TRUE),
+    colour = guide_legend(reverse = TRUE)
+  )
 
 
 

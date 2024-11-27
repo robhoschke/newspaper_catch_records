@@ -114,7 +114,9 @@ dat <- centroid_df %>%
   ) %>%
   mutate(
     bathy = extract(bathy, .)$bathy_cropped1,
-    bathy = ifelse(bathy >= 0, runif(sum(bathy >= 0), min = -10, max = -2), bathy) ##resample positive bathy values
+    bathy = ifelse(bathy >= 0, runif(sum(bathy >= 0), min = -10, max = -2), bathy), ##resample positive bathy values
+    depth = bathy * -1,
+    depth_zone = as.factor(ifelse(depth <= 20, "nearshore", "inshore_demersal"))
   ) %>% 
   arrange(ID) %>% 
   mutate(depth=bathy*-1)     #,

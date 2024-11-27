@@ -1,16 +1,15 @@
 ###
 # Project: Historical recreational fishing
 # Data:    historical fish size data
-# Task:    modelling fish size controlling for distance from shore, and plotting responses with varying distances
+# Task:    modelling fish size controlling for distance from shore, and plotting responses with distance held at different constants
 # Author:  Rob
 # Date:    June 2024
 
 ##to do:
-#run with k=5
-#re-run 1000
-#mean deviance explained?
 
-source("R/data_filtering.R")
+#re-run 1000
+
+source("R/data_filtering.R")  
 
 
 ####gam with distance####

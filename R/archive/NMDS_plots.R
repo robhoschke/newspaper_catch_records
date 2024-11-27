@@ -1,3 +1,5 @@
+install.packages("vegan")
+install.packages("dartR")
 library(tibble)
 library(dplyr)
 library(tidyr)
@@ -10,22 +12,36 @@ library(ggpubr)
 library(vegan)
 library(dartR)
 
-data(dune)
-data(varespec)
-data(dune.env)
-glimpse(dune.env)
-adonis(dune ~ Management*A1, data=dune.env, permutations=99)
 
-species_pres_abs <- dat_joe[,41:65]
-m_species_pres_abs <- as.matrix(species_pres_abs)
+glimpse(dhu_records)
+
+dhu_records_cleaned <- dhu_records[complete.cases(dhu_records[, 49:73]), ]
+
+species_pres_abs <- dhu_records_cleaned[,49:73]
+m_species_pres_abs <- as.matrix(species_pres_abs) 
+
 nmds = metaMDS(m_species_pres_abs, distance = "euclidian")
 nmds
 
 plot(nmds)
 
 data.scores = as.data.frame(scores(nmds)$sites)
-data.scores$decade = dat_joe$decade
-data.scores$Zone = dat_joe$Zone
+data.scores$decade = dhu_records_cleaned$decade
+data.scores$Zone = dhu_records_cleaned$Zone.y
+
+species_pres_abs$decade= as.factor(dhu_records_cleaned$decade) 
+
+
+species_pres_abs %>%
+  group_by(decade) %>%
+  summarise(across(everything(), sum))
+
+species_pres_abs %>%
+  group_by(decade) %>%
+  summarise(across(everything(), ~ mean(.))) 
+
+glimpse(species_pres_abs)
+
 head(data.scores)
 
 ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) + 
@@ -33,10 +49,17 @@ ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) +
   theme(panel.background = element_blank())+
   geom_jitter()
 
+species.scores <- as.data.frame(scores(nmds, display = "species"))
+species.scores$Species <- colnames(m_species_pres_abs)
 
 
-ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) + 
-  geom_point(size = 2, aes( shape = decade, colour = Zone))+ 
-  theme(panel.background = element_blank()) 
+ggplot() +
+  geom_point(data = data.scores, aes(x = NMDS1, y = NMDS2, colour = decade), size = 1, position = position_jitter(width = 0.1, height = 0.1)) + 
+  geom_text(data = species.scores, aes(x = NMDS1, y = NMDS2, label = Species), 
+            color = "red", vjust = 1.5, hjust = 0.5, size = 3) +  # Label species
+  theme(panel.background = element_blank()) + 
+  geom_jitter()
+
+
 
 head(data.scores)
