@@ -7,8 +7,8 @@
 ##
 
 source("R/data_filtering.R")
-
-
+install.packages("ggsn")
+library("ggsn")
 ##### random points for each polygon#####             
 all_random_points_with_metadata <- list()
 
@@ -108,6 +108,9 @@ names(bathy_df_coarse) <- c("x", "y", "z")
         annotate(geom = "text", x = c(115.5),             
                  y = c(-31.92), 
                  label = c("Rottnest Island"), size = 2.7, colour = 'white') +
+        annotate(geom = "text", x = c(115.51),             
+                 y = c(-32.2), 
+                 label = c("Garden Island"), size = 2.7, colour = 'white') +
         annotate(geom = "text", x = c(115.95),             
                  y = c(-31.9), 
                  label = c("Perth"), size = 3) +
@@ -122,9 +125,23 @@ names(bathy_df_coarse) <- c("x", "y", "z")
       # Add the scalebar to plot1 only
       if (i == 1) {
         p <- p + 
-          annotation_scale(location = "bl", 
-                           width_hint = 0.2,
-                           text_col = 'white') + 
+         
+      ggsn::scalebar(
+            x.min = 115.0, x.max = 116.0,   # Longitude bounds for scalebar placement
+            y.min = -32.8, y.max = -32.0, # Latitude bounds for scalebar placement
+            dist = 10,                   # Distance for each segment
+            dist_unit = "km",            # Unit for distances
+            transform = TRUE,            # Transform to handle lat/lon coordinates
+            model = "WGS84",             # Coordinate reference system
+            location = "bottomleft",     # Scalebar location
+            height = 0.02,
+            st.color = "white",          # Text color
+            st.size = 3,
+            border.size = 0.2,
+            box.color = "white",
+            st.bottom = TRUE
+      ) +
+          
           annotate(geom = "text", x = c(115.11, 115.11),             
                    y = c(-32.485,-32.695), 
                    label = c("High", "low"), size = 2.7, colour = 'white') +
@@ -144,6 +161,8 @@ names(bathy_df_coarse) <- c("x", "y", "z")
       plots_list[[d]] <- p
     }
     
+    
+    plots_list[1]
     ## Add prop_plot to the list
     #plots_list[["prop_plot"]] <- prop_plot
     
@@ -198,8 +217,27 @@ reference_map <- ggplot() +
   annotate(geom = "text", x = c(122),             
            y = c(-25), 
            label = c("Western Austrlia"), size = 5) +
-  annotation_scale(location = "bl", 
-                   width_hint = 0.2)+
+
+  ggsn::scalebar(
+    x.min = 111, x.max = 129,   # Longitude bounds for scalebar placement
+    y.min = -37, y.max = -12, # Latitude bounds for scalebar placement
+    dist = 200,                   # Distance for each segment
+    dist_unit = "km",            # Unit for distances
+    transform = TRUE,            # Transform to handle lat/lon coordinates
+    model = "WGS84",             # Coordinate reference system
+    location = "bottomleft",     # Scalebar location
+    height = 0.02,
+    st.color = "black",          # Text color
+    st.size = 3,
+    border.size = 0.2,
+    # Text size
+    # box.fill = c("black", "white"), # Alternating colors for segments
+    box.color = "black",
+    st.bottom = TRUE
+  ) +
+  
+    # annotation_scale(location = "bl", 
+  #                  width_hint = 0.2)+
   annotate(geom = "text", x = c(117.3),             
            y = c(-31.9), 
            label = c("Perth"), size = 4) +
@@ -214,5 +252,13 @@ reference_map <- ggplot() +
 plots_list[["reference_map"]] <- reference_map
 
 plot <- lapply(plots_list, ggplotGrob)
-grid.arrange(grobs = plot, ncol = 3, nrow = 2)
+grid_layout <- grid.arrange(grobs = plot, ncol = 3, nrow = 2)
+
+ggsave(
+  filename = "grid_layout.pdf",
+  plot = grid_layout,   # Use the grid layout object
+  width = 12,           # Specify width in inches
+  height = 12,           # Specify height in inches
+  dpi = 600             # Resolution
+)
     
