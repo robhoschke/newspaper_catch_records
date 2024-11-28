@@ -7,8 +7,8 @@
 ##
 
 source("R/data_filtering.R")
-install.packages("ggsn")
 library("ggsn")
+
 ##### random points for each polygon#####             
 all_random_points_with_metadata <- list()
 
@@ -62,9 +62,6 @@ plot(df$geometry,
 
 
 ##### heatmap by milestone years #####
-
-#source("R/nearshoreOccurance_proportionPlot.R")  ##proportion plot for heatmap grid. Note: need to run start of this script before running source script, to get df
-
 
 ## bathy for contours
 
@@ -127,15 +124,15 @@ names(bathy_df_coarse) <- c("x", "y", "z")
         p <- p + 
          
       ggsn::scalebar(
-            x.min = 115.0, x.max = 116.0,   # Longitude bounds for scalebar placement
-            y.min = -32.8, y.max = -32.0, # Latitude bounds for scalebar placement
-            dist = 10,                   # Distance for each segment
-            dist_unit = "km",            # Unit for distances
-            transform = TRUE,            # Transform to handle lat/lon coordinates
-            model = "WGS84",             # Coordinate reference system
-            location = "bottomleft",     # Scalebar location
+            x.min = 115.0, x.max = 116.0,   
+            y.min = -32.8, y.max = -32.0, 
+            dist = 10,                 
+            dist_unit = "km",           
+            transform = TRUE,            
+            model = "WGS84",             
+            location = "bottomleft",     
             height = 0.02,
-            st.color = "white",          # Text color
+            st.color = "white",          
             st.size = 3,
             border.size = 0.2,
             box.color = "white",
@@ -162,34 +159,24 @@ names(bathy_df_coarse) <- c("x", "y", "z")
     }
     
     
-    plots_list[1]
-    ## Add prop_plot to the list
-    #plots_list[["prop_plot"]] <- prop_plot
-    
-    # Use grid.arrange to display all plots, including plot1 with legend and scalebar
-    plot <- lapply(plots_list, ggplotGrob)
-    grid.arrange(grobs = plot, ncol = 3, nrow = 2)
-    
+  plot <- lapply(plots_list, ggplotGrob)
+  # grid.arrange(grobs = plot, ncol = 3, nrow = 2)
     
     
 ##
 ####
 #####
 ######
-####### plotting australia basemap 
+####### plotting australia basemap #######
     
 ##make basemap
-    
-install.packages(c( "googleway", "ggrepel", 
-                       "libwgeom", "rnaturalearth", "rnaturalearthdata"))
+
 library(cowplot)                 
 library(ggspatial)
 library(rnaturalearth)
 library(rnaturalearthdata)                 
 library(ggspatial)
     
-    
-
 
 xmin <- 114.9
 ymin <- -32.9
@@ -204,7 +191,7 @@ rectangle <- st_polygon(list(rbind(
   c(xmin, ymin)
 )))
 
-rectangle_sf <- st_sfc(rectangle, crs = 4326)  # Assuming WGS84 CRS
+rectangle_sf <- st_sfc(rectangle, crs = 4326)  # WGS84 CRS
 rectangle_sf <- st_sf(geometry = rectangle_sf)
 
 world <- ne_countries(scale = "medium", returnclass = "sf")
@@ -217,35 +204,35 @@ reference_map <- ggplot() +
   annotate(geom = "text", x = c(122),             
            y = c(-25), 
            label = c("Western Austrlia"), size = 5) +
-
-  ggsn::scalebar(
-    x.min = 111, x.max = 129,   # Longitude bounds for scalebar placement
-    y.min = -37, y.max = -12, # Latitude bounds for scalebar placement
-    dist = 200,                   # Distance for each segment
-    dist_unit = "km",            # Unit for distances
-    transform = TRUE,            # Transform to handle lat/lon coordinates
-    model = "WGS84",             # Coordinate reference system
-    location = "bottomleft",     # Scalebar location
-    height = 0.02,
-    st.color = "black",          # Text color
-    st.size = 3,
-    border.size = 0.2,
-    # Text size
-    # box.fill = c("black", "white"), # Alternating colors for segments
-    box.color = "black",
-    st.bottom = TRUE
-  ) +
-  
-    # annotation_scale(location = "bl", 
-  #                  width_hint = 0.2)+
   annotate(geom = "text", x = c(117.3),             
            y = c(-31.9), 
            label = c("Perth"), size = 4) +
+  ggsn::scalebar (
+    x.min = 111, x.max = 129,   
+    y.min = -37, y.max = -12, 
+    dist = 200,                   
+    dist_unit = "km",           
+    transform = TRUE,           
+    model = "WGS84",            
+    location = "bottomleft",     
+    height = 0.02,
+    st.color = "black",          
+    st.size = 3,
+    border.size = 0.2,
+    box.color = "black",
+    st.bottom = TRUE ) +
+  
   theme(panel.background = element_blank(),
         panel.border = element_rect(fill=NA),
         axis.title=element_blank(),
         axis.text=element_blank(),
         axis.ticks=element_blank())
+
+##
+###
+####
+#####
+###### Final plot ######
 
 ##add basemap to spatial plots
 
@@ -256,9 +243,9 @@ grid_layout <- grid.arrange(grobs = plot, ncol = 3, nrow = 2)
 
 ggsave(
   filename = "grid_layout.pdf",
-  plot = grid_layout,   # Use the grid layout object
-  width = 12,           # Specify width in inches
-  height = 12,           # Specify height in inches
-  dpi = 600             # Resolution
+  plot = grid_layout,   
+  width = 12,           
+  height = 12,          
+  dpi = 600             
 )
     
