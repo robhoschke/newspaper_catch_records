@@ -6,33 +6,16 @@
 # Date:    April 2024
 ##
 
-##install once
 
-# install.packages("paletteer")
-# install.packages("spatstat")
-# install.packages("sf")
-# install.packages("tibble")
-# install.packages("dplyr")
-# install.packages("tidyr")
-# install.packages("readr")
-# install.packages("ggplot2")
-# install.packages("tidyverse")
-# install.packages("MASS")
-# install.packages("ggpubr")
-# install.packages("car")
-# install.packages("maps")
-# install.packages("ggtext")
-# install.packages("metR")
-# install.packages("terra")
-# install.packages("EnvStats")
-# install.packages("gridExtra")
-# install.packages("ggpubr")
-# install.packages("geosphere")
-# install.packages("osmdata")
-# install.packages("gratia")
-# install.packages("mgcv")
-# install.packages("corrr")
-# install.packages("broom")
+
+# install.packages(c(
+#   "paletteer", "spatstat", "sf", "tibble", "dplyr", "tidyr", "readr", 
+#   "ggplot2", "tidyverse", "MASS", "ggpubr", "car", "maps", "ggtext", 
+#   "metR", "terra", "EnvStats", "gridExtra", "geosphere", "osmdata", 
+#   "gratia", "mgcv", "corrr", "broom", "ggsn","googleway", "ggrepel", 
+# "libwgeom", "rnaturalearth", "rnaturalearthdata"
+
+# ))
 
 library(paletteer)
 library(spatstat)
@@ -119,8 +102,7 @@ dat <- centroid_df %>%
     depth_zone = as.factor(ifelse(depth <= 20, "nearshore", "inshore_demersal"))
   ) %>% 
   arrange(ID) %>% 
-  mutate(depth=bathy*-1)     #,
-        # yyyy=as.numeric(yyyy)-1904)
+  mutate(depth=bathy*-1)    
 
 glimpse(dat)
 plot(dat)
