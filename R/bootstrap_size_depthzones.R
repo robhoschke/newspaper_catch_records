@@ -114,51 +114,33 @@ mean_values_by_zone <- combined_preds %>%
   glimpse()
 
 
-ggplot() +
-  geom_line(data = mean_values_by_zone, aes(x = yyyy, y = fit_mean, colour = depth_zone)) +
-  geom_ribbon(data = mean_values_by_zone, aes(x = yyyy, ymin = lwr_mean, ymax = upr_mean, fill = depth_zone), alpha = 0.4) +
-  scale_fill_manual(values = c("nearshore" = "salmon", "inshore_demersal" = "skyblue"),
-                    labels = c("midshore (20-250m)","nearshore (0-20m)")) +
-  scale_colour_manual(values = c("nearshore" = "salmon","inshore_demersal" = "lightblue"), 
-                      labels = c( "midshore (20-250m)","nearshore (0-20m)")) +
-  geom_rug(data = dat, aes(x = yyyy-1904, y = largest.dhufish.kg, colour = depth_zone),
-           position = "jitter", alpha = 0.4, sides = "b") +
-  scale_x_continuous(breaks = c(-4, 46, 96),
-                     labels = c("1900", "1950", "2000")) +
-  scale_y_continuous(limits = c(0, 20)) +
-  labs(
-       x = "Year", 
-       y = "Dhufish size (kg)",
-       colour = "Depth zone",
-       fill = "Depth zone") +
-  theme(panel.grid.major = element_blank(), 
-        panel.grid.minor = element_blank(),
-        panel.background = element_blank(), 
-        axis.line = element_line(colour = "black"),
-        legend.position = c(0.8,0.2)) +
-  guides(
-    fill = guide_legend(reverse = TRUE),
-    colour = guide_legend(reverse = TRUE)
-  )
-
-
-
-#####
+##### plot
 ####
 ##
-#rug using segments rather than default
 
-sub1 <- subset(dat, depth_zone == "nearshore")
-sub2 <- subset(dat, depth_zone == "inshore_demersal")
+
+##rename inshore demersal in mean_values_by_zone and dat
+
+
+mean_values_by_zone <- mean_values_by_zone %>%
+  mutate(depth_zone = fct_recode(depth_zone, offshore = "inshore_demersal"))
+
+dat1 <- dat %>%
+  mutate(depth_zone = fct_recode(depth_zone, offshore = "inshore_demersal"))
+
+## subset for depth zones for rug plot
+
+sub1 <- subset(dat1, depth_zone == "nearshore")
+sub2 <- subset(dat1, depth_zone == "offshore")
 
 
 ggplot() +
   geom_line(data = mean_values_by_zone, aes(x = yyyy, y = fit_mean, colour = depth_zone)) +
   geom_ribbon(data = mean_values_by_zone, aes(x = yyyy, ymin = lwr_mean, ymax = upr_mean, fill = depth_zone), alpha = 0.4) +
-  scale_fill_manual(values = c("nearshore" = "skyblue", "inshore_demersal" = "salmon"),
-                    labels = c("inshore demersal (20-250m)","nearshore (0-20m)")) +
-  scale_colour_manual(values = c("nearshore" = "skyblue","inshore_demersal" = "salmon"), 
-                      labels = c( "inshore demersal (20-250m)","nearshore (0-20m)")) +
+  scale_fill_manual(values = c("nearshore" = "skyblue", "offshore" = "salmon"),
+                    labels = c("offshore (20-250m)","nearshore (0-20m)")) +
+  scale_colour_manual(values = c("nearshore" = "skyblue","offshore" = "salmon"), 
+                      labels = c( "offshore (20-250m)","nearshore (0-20m)")) +
   # geom_rug(data = dat, aes(x = yyyy-1904, y = largest.dhufish.kg, colour = depth_zone),
   #          position = "jitter", alpha = 0.4, sides = "b") +
   geom_segment(data = sub2,
@@ -187,7 +169,15 @@ ggplot() +
         panel.grid.minor = element_blank(),
         panel.background = element_blank(), 
         axis.line = element_line(colour = "black"),
-        legend.position = c(0.8,0.2)) +
+        legend.position = c(0.8,0.2),
+  
+text = element_text(size = 14),  # Default text size for all elements
+axis.title = element_text(size = 16),  # Axis titles
+axis.text = element_text(size = 12),  # Axis labels
+legend.title = element_text(size = 14),  # Legend title
+legend.text = element_text(size = 12)  # Legend labels
+) + 
+  
   guides(
     fill = guide_legend(reverse = TRUE),
     colour = guide_legend(reverse = TRUE)

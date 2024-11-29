@@ -82,18 +82,18 @@ for (i in 1:n_repeats) {
 }
 
 gam_summary_df <- do.call(rbind, gam_summaries)
-write.csv(gam_summary_df, "data/dist_gam_summary.csv", row.names = FALSE)
+#write.csv(gam_summary_df, "outputs/dist_gam_summary.csv", row.names = FALSE)
 
 yyyy_predictions_df <- bind_rows(all_yyyy_predictions)
-write.csv(yyyy_predictions_df, "data/dist_preds.csv", row.names = FALSE)
+#write.csv(yyyy_predictions_df, "outputs/dist_preds.csv", row.names = FALSE)
 
-dist_preds <- read.csv("data/dist_preds.csv")
+dist_preds <- read.csv("outputs/dist_preds.csv")
 glimpse(dist_preds)
 
 
 mean_values <- dist_preds %>%
-  group_by(yyyy) %>%
-  summarise(
+  dplyr::group_by(yyyy) %>%
+  dplyr::summarise(
     fit_mean = mean(fit),
     lwr_mean = mean(lwr),
     upr_mean = mean(upr),
@@ -101,20 +101,26 @@ mean_values <- dist_preds %>%
   glimpse()
 
 
-ggplot() +
+dist_plot <- ggplot() +
   geom_ribbon(data = mean_values, aes(x = yyyy+1904, ymin = lwr_mean, ymax = upr_mean),fill="coral", alpha=0.7)+
   geom_line(data = mean_values, aes(x = yyyy+1904, y = fit_mean)) +
   geom_rug(data = dat, aes(x = yyyy, y = distance.1), position="jitter" , alpha = 0.4, sides="b")+
   #geom_point(data = dat, aes(x = yyyy, y = distance.1), inherit.aes = FALSE, alpha = 0.5)+
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        panel.background = element_blank(), axis.line = element_line(colour = "black"), legend.position = "none") +
-  scale_y_continuous(labels = function(y) y / 1000, limits=c(0,65000)) +
-  labs(title = "Predictions for distance effect across years",
-       x = "Year",
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black"), 
+        legend.position = "none",
+        text = element_text(size = 14),  # Default text size for all elements
+        axis.text = element_text(size = 12),  # Axis labels
+        legend.title = element_text(size = 14),  # Legend title
+        legend.text = element_text(size = 12)) +
+  scale_y_continuous(labels = function(y) y / 1000, limits=c(0,60000)) +
+  labs(x = "Year",
        y = "Distance from Fremantle (km)") 
 
 
-dist_gam_summary <- read.csv("data/dist_gam_summary.csv")
+dist_gam_summary <- read.csv("outputs/dist_gam_summary.csv")
 mean(dist_gam_summary$deviance_explained)
 
 
