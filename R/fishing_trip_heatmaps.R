@@ -101,22 +101,22 @@ names(bathy_df_coarse) <- c("x", "y", "z")
         paletteer::scale_fill_paletteer_c("viridis::plasma") +
         annotate(geom = "text", x = c(115.77, 115.85, 115.88, 115.78),             
                  y = c(-31.5, -31.8, -32.06, -32.6), 
-                 label = c("Two Rocks", "Hillarys", "Fremantle", "Mandurah"), size = 2.7) +
+                 label = c("Two Rocks", "Hillarys", "Fremantle", "Mandurah"), size = 3.5) +
         annotate(geom = "text", x = c(115.5),             
                  y = c(-31.92), 
-                 label = c("Rottnest Island"), size = 2.7, colour = 'white') +
+                 label = c("Rottnest Island"), size = 3, colour = 'white') +
         annotate(geom = "text", x = c(115.51),             
                  y = c(-32.2), 
-                 label = c("Garden Island"), size = 2.7, colour = 'white') +
+                 label = c("Garden Island"), size = 3, colour = 'white') +
         annotate(geom = "text", x = c(115.95),             
                  y = c(-31.9), 
-                 label = c("Perth"), size = 3) +
+                 label = c("Perth"), size = 4) +
         annotate(geom = "text", x = c(114.99, 115.11, 115.2, 115.45, 115.55, 115.6),              
                  y = c(-31.55, -31.55, -31.55, -31.55, -31.55, -31.55), 
-                 label = c("-200", "-100", "-50", "-30", "-20", "-10"), size = 2, colour = 'white') +
+                 label = c("-200", "-100", "-50", "-30", "-20", "-10"), size = 2.5, colour = 'white') +
         coord_sf(xlim = c(114.9851, 116.0),
                  ylim = c(-32.7966, -31.30936)) +
-        theme_minimal(base_size = 9) 
+        theme_minimal(base_size = 10) 
       
       
       # Add the scalebar to plot1 only
@@ -203,10 +203,10 @@ reference_map <- ggplot() +
   coord_sf(xlim = c(110, 129), ylim = c(-12, -38), expand = FALSE) +
   annotate(geom = "text", x = c(122),             
            y = c(-25), 
-           label = c("Western Austrlia"), size = 5) +
+           label = c("Western Austrlia"), size = 7) +
   annotate(geom = "text", x = c(117.3),             
            y = c(-31.9), 
-           label = c("Perth"), size = 4) +
+           label = c("Perth"), size = 5) +
   ggsn::scalebar (
     x.min = 111, x.max = 129,   
     y.min = -37, y.max = -12, 
@@ -242,7 +242,7 @@ plot <- lapply(plots_list, ggplotGrob)
 grid_layout <- grid.arrange(grobs = plot, ncol = 3, nrow = 2)
 
 ggsave(
-  filename = "grid_layout.pdf",
+  filename = "grid_layout2.pdf",
   plot = grid_layout,   
   width = 12,           
   height = 12,          

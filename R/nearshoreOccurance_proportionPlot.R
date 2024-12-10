@@ -15,12 +15,12 @@ library(cowplot)
 
 df <- df %>%
   mutate(yyyy_bin = cut(yyyy, breaks = c(1900, 1958, 1965, 1989, 2006, 2011), right = TRUE)) %>%
-  mutate(depth_category = ifelse(bathy > -20, "Nearshore", "Inshore Demersal"))
+  mutate(depth_category = ifelse(bathy > -20, "Nearshore", "Offshore"))
 
 # Summarize the data within each bin and divide counts by 1000
 summary_data <- df %>%
   group_by(yyyy_bin, depth_category) %>%
-  summarise(trip_count = n() / 1000) %>%
+  dplyr::summarise(trip_count = n() / 1000) %>%
   ungroup()
 
 # Calculate proportions
@@ -43,20 +43,23 @@ sample_sizes <- summary_data %>%
 #####################
 ##########################
 
+summary_data$depth_category <- factor(summary_data$depth_category, levels = c("Offshore", "Nearshore"))
+
+
 prop_plot <- ggplot() +
   geom_col(data=summary_data, aes(x = yyyy_bin, y = proportion, fill = depth_category), position = "stack") +
-  scale_fill_manual(values = c("Inshore Demersal" = "lightsalmon", "Nearshore" = "lightskyblue")) +
+  scale_fill_manual(values = c("Offshore" = "lightsalmon", "Nearshore" = "lightskyblue")) +
 #  geom_text(data = sample_sizes, aes(x = yyyy_bin, y = 1.05, label = total_trips), size = 3, vjust = 0.5) +
   labs(
     x = "Time period",
     y = "Proportion of dhufish catches",
     fill = "Depth category")+
-  scale_x_discrete (labels= c("A", "B", "C", "D", "E")) +
+  scale_x_discrete (labels= c("A: 1900-1958", "B: 1959-1965", "C: 1966-1989", "D: 1990-2006", "E: 2007-2011")) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         panel.background = element_blank(), axis.line = element_blank(),
         axis.text.x = element_text(vjust = 5),
         axis.ticks.x = element_blank(),
-        text = element_text(size = 10))
+        text = element_text(size = 16))
 
 
 
