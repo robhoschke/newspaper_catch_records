@@ -7,7 +7,8 @@
 ##
 
 source("R/data_filtering.R")
-library("ggsn")
+install.packages("ggsn")
+library(prettymapr)
 
 ##### random points for each polygon#####             
 all_random_points_with_metadata <- list()
@@ -123,25 +124,17 @@ names(bathy_df_coarse) <- c("x", "y", "z")
       if (i == 1) {
         p <- p + 
          
-      ggsn::scalebar(
-            x.min = 115.0, x.max = 116.0,   
-            y.min = -32.8, y.max = -32.0, 
-            dist = 10,                 
-            dist_unit = "km",           
-            transform = TRUE,            
-            model = "WGS84",             
-            location = "bottomleft",     
-            height = 0.02,
-            st.color = "white",          
-            st.size = 3,
-            border.size = 0.2,
-            box.color = "white",
-            st.bottom = TRUE
-      ) +
+          annotation_scale(location = "bl", text_cex= 0) +
+  
+          annotate(
+            geom = "text", 
+            x = c(114.99, 115.08, 115.21, 115.11, 115.11),             
+            y = c(-32.78, -32.78, -32.78, -32.485, -32.695), 
+            label = c("0", "10", "20 km", "High", "low"), 
+            size = 2.7, 
+            colour = 'white'
+          ) +
           
-          annotate(geom = "text", x = c(115.11, 115.11),             
-                   y = c(-32.485,-32.695), 
-                   label = c("High", "low"), size = 2.7, colour = 'white') +
           annotation_north_arrow(location = "br", which_north = "true", 
                                  pad_x = unit(0.05, "in"), pad_y = unit(0.05, "in"),
                                  height = unit(0.8, "cm"), width = unit(0.8, "cm"),
@@ -162,7 +155,6 @@ names(bathy_df_coarse) <- c("x", "y", "z")
   plot <- lapply(plots_list, ggplotGrob)
   # grid.arrange(grobs = plot, ncol = 3, nrow = 2)
     
-    
 ##
 ####
 #####
@@ -175,7 +167,6 @@ library(cowplot)
 library(ggspatial)
 library(rnaturalearth)
 library(rnaturalearthdata)                 
-library(ggspatial)
     
 
 xmin <- 114.9
@@ -203,24 +194,20 @@ reference_map <- ggplot() +
   coord_sf(xlim = c(110, 129), ylim = c(-12, -38), expand = FALSE) +
   annotate(geom = "text", x = c(122),             
            y = c(-25), 
-           label = c("Western Austrlia"), size = 7) +
+           label = c("Western Australia"), size = 7) +
   annotate(geom = "text", x = c(117.3),             
            y = c(-31.9), 
            label = c("Perth"), size = 5) +
-  ggsn::scalebar (
-    x.min = 111, x.max = 129,   
-    y.min = -37, y.max = -12, 
-    dist = 200,                   
-    dist_unit = "km",           
-    transform = TRUE,           
-    model = "WGS84",            
-    location = "bottomleft",     
-    height = 0.02,
-    st.color = "black",          
-    st.size = 3,
-    border.size = 0.2,
-    box.color = "black",
-    st.bottom = TRUE ) +
+  
+  annotation_scale(location = "bl", style = "bar", text_cex = 0) +
+  
+  annotate(
+    geom = "text", 
+    x = c(110.6, 112.6, 114.9),             
+    y = c(-36.5, -36.5, -36.5), 
+    label = c("0", "200", "400 km"), 
+    size = 3) +
+   
   
   theme(panel.background = element_blank(),
         panel.border = element_rect(fill=NA),
@@ -242,7 +229,7 @@ plot <- lapply(plots_list, ggplotGrob)
 grid_layout <- grid.arrange(grobs = plot, ncol = 3, nrow = 2)
 
 ggsave(
-  filename = "grid_layout2.pdf",
+  filename = "grid_layout4.pdf",
   plot = grid_layout,   
   width = 12,           
   height = 12,          

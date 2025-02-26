@@ -7,15 +7,14 @@
 ##
 
 
-
-# install.packages(c(
-#   "paletteer", "spatstat", "sf", "tibble", "dplyr", "tidyr", "readr", 
-#   "ggplot2", "tidyverse", "MASS", "ggpubr", "car", "maps", "ggtext", 
-#   "metR", "terra", "EnvStats", "gridExtra", "geosphere", "osmdata", 
-#   "gratia", "mgcv", "corrr", "broom", "ggsn","googleway", "ggrepel", 
-# "libwgeom", "rnaturalearth", "rnaturalearthdata"
-
-# ))
+ # install.packages(c(
+ #   "paletteer", "spatstat", "sf", "tibble", "dplyr", "tidyr", "readr",
+ #   "ggplot2", "tidyverse", "MASS", "ggpubr","ggspatial", "car", "maps", "ggtext",
+ #   "metR", "terra", "EnvStats", "gridExtra", "geosphere", "osmdata",
+ #   "gratia", "mgcv", "corrr", "broom", "ggsn","googleway", "ggrepel",
+ # "libwgeom", "rnaturalearth", "rnaturalearthdata"
+ # 
+ # ))
 
 library(paletteer)
 library(spatstat)
@@ -47,12 +46,14 @@ library(ggspatial)
 dhu_records <- read.csv('data/all_dhufish_records_edited.csv')
 metro_area <- st_read('Qgis/shp/perth_metro.shp')
 ###perth_zones <- st_read('Qgis/shp/perth_rec_fsihing_zones.shp') ## old zones
-perth_zones <- st_read('Qgis/shp/rec_zones_fewer.shp') 
+###perth_zones <- st_read('Qgis/shp/rec_zones_fewer.shp') ##no longer use zones
 perth_coastline <- st_read(('Qgis/shp/Perth_coastline.shp'))
 Freo_harbour <- st_read(('Qgis/shp/Freo_harbour.shp'))
 trip_location <- st_read('Qgis/shp/trip_location_estimate_complete.shp')
 WA_base <- st_read('Qgis/shp/basemap.shp')
 bathy <- rast("Qgis/raster/bathy_cropped1.tif")
+WApop <- read.csv('data/WApop.csv') %>% 
+          rename(yyyy = Year)
 
 ##### crop trip locations to remove land #####
 #still going to be some overlap, where the bathy does not align with the basemap
@@ -63,7 +64,8 @@ glimpse(cropped_trip_location)
 ##### join spatial data #####
 
 fishing_trips <- left_join(cropped_trip_location, dhu_records, by = c("ID") ) %>% 
-arrange(ID)
+arrange(ID) %>% 
+left_join(WApop, by = "yyyy")
 
 head(fishing_trips)
 
@@ -106,23 +108,28 @@ dat <- centroid_df %>%
 
 glimpse(dat)
 plot(dat)
-write.csv(dat, "data/population_data_centroids.csv")
+#write.csv(dat, "data/population_data_centroids.csv")
 
 
 ###add distance to shoreline variable
 
-dist <- geosphere::dist2Line(p = st_coordinates(dat), 
-                             line = st_coordinates(perth_coastline)[,1:2])
+# dist <- geosphere::dist2Line(p = st_coordinates(dat), 
+#                              line = st_coordinates(perth_coastline)[,1:2])
 
 dist1 <- geosphere::dist2Line(p = st_coordinates(dat), 
                               line = st_coordinates(Freo_harbour)[,1:2])
 
 #combine initial data with distance to coastline
-dat <- cbind(dat,dist) 
+#dat <- cbind(dat,dist) 
 dat <- cbind(dat,dist1)
 glimpse(dat)
 
+# Perform the join
+dat <- dat %>%
+  left_join(WApop, by = "yyyy")
 
+# Check the result
+glimpse(dat)
 
 
 
