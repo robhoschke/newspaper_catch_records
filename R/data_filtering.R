@@ -43,13 +43,35 @@ library(ggspatial)
 
 
 ##### import data#####
-dhu_records <- read.csv('data/all_dhufish_records_edited.csv')
+
+##fishing records
+dhu_records <- read.csv('data/dhufish_records_updated01042025.csv')
+
+##checks
+summary(dhu_records$ID)
+duplicated(dhu_records$ID)
+unique(dhu_records$yyyy)
+
+###fishing location estimates
+##
+trip_location <- st_read('Qgis/shp/trip_location_estimate_complete.shp')
+
+# check no missing ID's 
+id_list <- trip_location$ID
+id_list <- sort(id_list)
+full_sequence <- seq(min(id_list), max(id_list))
+missing_ids <- setdiff(full_sequence, id_list)
+
+##checks
+summary(trip_location$ID)
+duplicated(trip_location$ID)
+
+
+
+##remaining data
 metro_area <- st_read('Qgis/shp/perth_metro.shp')
-###perth_zones <- st_read('Qgis/shp/perth_rec_fsihing_zones.shp') ## old zones
-###perth_zones <- st_read('Qgis/shp/rec_zones_fewer.shp') ##no longer use zones
 perth_coastline <- st_read(('Qgis/shp/Perth_coastline.shp'))
 Freo_harbour <- st_read(('Qgis/shp/Freo_harbour.shp'))
-trip_location <- st_read('Qgis/shp/trip_location_estimate_complete.shp')
 WA_base <- st_read('Qgis/shp/basemap.shp')
 bathy <- rast("Qgis/raster/bathy_cropped1.tif")
 WApop <- read.csv('data/WApop.csv') %>% 
@@ -63,9 +85,12 @@ glimpse(cropped_trip_location)
 
 ##### join spatial data #####
 
-fishing_trips <- left_join(cropped_trip_location, dhu_records, by = c("ID") ) %>% 
-arrange(ID) %>% 
-left_join(WApop, by = "yyyy")
+fishing_trips <- left_join(cropped_trip_location, dhu_records, by = c("ID")) %>% 
+arrange(yyyy) 
+unique(fishing_trips$yyyy)  
+is.na(fishing_trips$yyyy)
+
+#left_join(WApop, by = "yyyy")
 
 head(fishing_trips)
 
@@ -88,9 +113,7 @@ glimpse(centroid_df)
 
 dat <- centroid_df %>%
   st_as_sf() %>%
-  st_join(st_as_sf(perth_zones)) %>%
   mutate(
-    Zone = as.factor(Zone),
     month = as.factor(month),
     latitude = st_coordinates(geometry)[, "Y"],
     scientific = "fish.size",
